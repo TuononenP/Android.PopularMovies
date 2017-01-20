@@ -1,8 +1,11 @@
 <resources>
     <string name="app_name">PopularMovies</string>
-    <string name="themoviedb_image_basepath">http://image.tmdb.org/t/p/</string>
-    <string name="themoviedb_image_size">w185</string>
     <string name="themoviedb_api_basepath">http://api.themoviedb.org/3/</string>
     <string name="themoviedb_api_most_popular">movie/popular/</string>
     <string name="themoviedb_api_top_rated">movie/top_rated</string>
+    <string name="themoviedb_api_key_not_found_error">File themoviedb_api_key_v3_auth.txt in folder assets not found. You need to include themoviedb.org API key in this file</string>
+    <string name="themoviedb_api_key_filename">themoviedb_api_key_v3_auth.txt</string>
+    <string name="themoviedb_url_malformed_error">Url to fetch movies list was not formed correctly</string>
+    <string name="themoviedb_api_call_error"></string>
+    <string name="default_file_encoding">UTF-8</string>
 </resources>
