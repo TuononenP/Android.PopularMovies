@@ -2,8 +2,8 @@ package com.petrituononen.popularmovies;
 
 import android.content.Context;
 import android.os.AsyncTask;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
@@ -109,12 +109,9 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         protected void onPostExecute(List<MovieDb> movieDbs) {
-//            mAdapter = new MovieAdapter(movieDbs);
-//            mMoviesList.setAdapter(mAdapter);
             mMovieAdapter = new MovieAdapter(movieDbs);
             mRecyclerView.setAdapter(mMovieAdapter);
             mMovieAdapter.notifyDataSetChanged();
-//            super.onPostExecute(movieDbs);
         }
 
         @Override

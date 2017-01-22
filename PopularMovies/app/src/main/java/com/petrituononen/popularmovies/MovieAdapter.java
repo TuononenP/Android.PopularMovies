@@ -13,8 +13,6 @@ import java.util.List;
 
 import info.movito.themoviedbapi.model.MovieDb;
 
-import static android.net.Uri.*;
-
 /**
  * Created by Petri Tuononen on 22.1.2017.
  */
