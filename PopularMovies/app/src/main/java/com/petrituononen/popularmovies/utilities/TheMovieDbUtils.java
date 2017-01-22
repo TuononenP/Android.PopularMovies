@@ -92,11 +92,11 @@ public class TheMovieDbUtils {
         return new TmdbApi(getApiKey(context)).getMovies();
     }
 
-    public MovieResultsPage getTopRated(Context context) {
-        return getMovies(context).getTopRatedMovies("en", 0);
+    public MovieResultsPage getTopRated(Context context, int pageNumber) {
+        return getMovies(context).getTopRatedMovies("en", pageNumber);
     }
 
-    public MovieResultsPage getmostPopular(Context context) {
-        return getMovies(context).getPopularMovies("en", 0);
+    public MovieResultsPage getMostPopular(Context context, int pageNumber) {
+        return getMovies(context).getPopularMovies("en", pageNumber);
     }
 }

@@ -1,28 +1,22 @@
 package com.petrituononen.popularmovies;
 
 import android.content.Context;
-import android.net.Uri;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.runner.AndroidJUnit4;
-import android.widget.ImageView;
 
 import com.petrituononen.popularmovies.utilities.ApiKeyUtils;
 import com.petrituononen.popularmovies.utilities.NetworkUtils;
 import com.petrituononen.popularmovies.utilities.PicassoUtils;
 import com.petrituononen.popularmovies.utilities.TheMovieDbUtils;
-import com.squareup.picasso.Callback;
-import com.squareup.picasso.Picasso;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import java.util.List;
-import java.util.concurrent.atomic.AtomicBoolean;
-
-import info.movito.themoviedbapi.model.MovieDb;
 import info.movito.themoviedbapi.model.core.MovieResultsPage;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Instrumentation test, which will execute on an Android device.
@@ -57,7 +51,7 @@ public class ExampleInstrumentedTest {
     public void can_get_most_popular_movies() throws Exception {
 //        String response = mMovieUtils.getMostPopularMovies(mContext);
 //        assertNotEquals("", response);
-        MovieResultsPage results = mMovieUtils.getmostPopular(mContext);
+        MovieResultsPage results = mMovieUtils.getMostPopular(mContext, 0);
 //        Log.d(TAG, "Amount of popular movies: " + results.getResults().size());
         assertTrue(results.getResults().size() > 0);
     }
@@ -66,13 +60,13 @@ public class ExampleInstrumentedTest {
     public void can_get_top_rated_movies() throws Exception {
 //        String response = mMovieUtils.getTopRatedMovies(mContext);
 //        assertNotEquals("", response);
-        MovieResultsPage results = mMovieUtils.getTopRated(mContext);
+        MovieResultsPage results = mMovieUtils.getTopRated(mContext, 0);
         assertTrue(results.getResults().size() > 0);
     }
 
 //    @Test
 //    public void can_load_movie_images() throws Exception {
-//        MovieResultsPage results = mMovieUtils.getmostPopular(mContext);
+//        MovieResultsPage results = mMovieUtils.getmostPopular(mContext, 0);
 //        List<MovieDb> movies = results.getResults();
 //        final AtomicBoolean loaded = new AtomicBoolean();
 //        if (movies.size() > 0) {
