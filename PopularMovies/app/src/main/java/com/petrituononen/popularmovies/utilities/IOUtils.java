@@ -11,13 +11,13 @@ import java.io.InputStream;
  * Created by Petri Tuononen on 20.1.2017.
  */
 public class IOUtils {
-    public String ReadFileFromAssetsFolder(Context context, String fileName, String encoding) throws IOException {
+    public String readFileFromAssetsFolder(Context context, String fileName, String encoding) throws IOException {
         AssetManager am = context.getAssets();
         InputStream is = am.open(fileName);
-        return ConvertInputStreamToString(is, encoding);
+        return convertInputStreamToString(is, encoding);
     }
 
-    public String ConvertInputStreamToString(InputStream is, String encoding) throws IOException {
+    public String convertInputStreamToString(InputStream is, String encoding) throws IOException {
         int size = is.available();
         byte buffer[] = new byte[size];
         ByteArrayOutputStream result = new ByteArrayOutputStream();

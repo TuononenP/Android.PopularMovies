@@ -12,14 +12,14 @@ import java.io.IOException;
  */
 public class ApiKeyUtils {
     private static final String TAG = ApiKeyUtils.class.getSimpleName();
-    private IOUtils IOUtils = new IOUtils();
+    private IOUtils mIOUtils = new IOUtils();
 
-    public String GetTheMovieDbApiKey(Context context) {
+    public String getTheMovieDbApiKey(Context context) {
         String apiKey = "";
         try {
             String fileName = context.getString(R.string.themoviedb_api_key_filename);
             String encoding = context.getString(R.string.default_file_encoding);
-            apiKey = IOUtils.ReadFileFromAssetsFolder(context, fileName, encoding);
+            apiKey = mIOUtils.readFileFromAssetsFolder(context, fileName, encoding);
         } catch (IOException e) {
             String errorText = context.getString(R.string.themoviedb_api_key_not_found_error);
             Log.w(TAG, errorText);

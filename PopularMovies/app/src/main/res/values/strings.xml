@@ -1,5 +1,6 @@
 <resources>
     <string name="app_name">Popular Movies</string>
+    <string name="themobiedb_api_movie_poster_basepath">http://image.tmdb.org/t/p/</string>
     <string name="themoviedb_api_basepath">http://api.themoviedb.org/3/</string>
     <string name="themoviedb_api_most_popular">movie/popular/</string>
     <string name="themoviedb_api_top_rated">movie/top_rated</string>

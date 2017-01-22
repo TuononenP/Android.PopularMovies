@@ -11,6 +11,10 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+import info.movito.themoviedbapi.TmdbApi;
+import info.movito.themoviedbapi.TmdbMovies;
+import info.movito.themoviedbapi.model.core.MovieResultsPage;
+
 /**
  * Created by Petri Tuononen on 20.1.2017.
  */
@@ -21,14 +25,14 @@ public class TheMovieDbUtils {
     private ApiKeyUtils ApiKeyUtil = new ApiKeyUtils();
     private NetworkUtils NetworkUtil = new NetworkUtils();
 
-    public String GetMostPopularMovies(Context context) {
-        String mostPopular = GetMostPopularPath(context);
-        return GetMoviesList(context, mostPopular);
+    public String getMostPopularMovies(Context context) {
+        String mostPopular = getMostPopularPath(context);
+        return getMoviesList(context, mostPopular);
     }
 
-    public String GetTopRatedMovies(Context context) {
-        String topRated = GetTopRatedPath(context);
-        return GetMoviesList(context, topRated);
+    public String getTopRatedMovies(Context context) {
+        String topRated = getTopRatedPath(context);
+        return getMoviesList(context, topRated);
     }
 
     /**
@@ -37,10 +41,10 @@ public class TheMovieDbUtils {
      * @param sortOrder For the full list of sort paths see https://developers.themoviedb.org/3/movies
      * @return
      */
-    private String GetMoviesList(Context context, String sortOrder) {
+    private String getMoviesList(Context context, String sortOrder) {
         String response = "";
-        String basePath = GetBasePath(context);
-        String apiKey = GetApiKey(context);
+        String basePath = getBasePath(context);
+        String apiKey = getApiKey(context);
         Uri uri = Uri
                 .parse(basePath)
                 .buildUpon()
@@ -66,21 +70,33 @@ public class TheMovieDbUtils {
         return response;
     }
 
-    private String GetApiKey(Context context) {
+    private String getApiKey(Context context) {
         String apiKey = "";
-        apiKey = ApiKeyUtil.GetTheMovieDbApiKey(context);
+        apiKey = ApiKeyUtil.getTheMovieDbApiKey(context);
         return apiKey;
     }
 
-    private String GetBasePath(Context context) {
+    private String getBasePath(Context context) {
         return context.getString(R.string.themoviedb_api_basepath);
     }
 
-    private String GetMostPopularPath(Context context) {
+    private String getMostPopularPath(Context context) {
         return context.getString(R.string.themoviedb_api_most_popular);
     }
 
-    private String GetTopRatedPath(Context context) {
+    private String getTopRatedPath(Context context) {
         return context.getString(R.string.themoviedb_api_top_rated);
+    }
+
+    public TmdbMovies getMovies(Context context) {
+        return new TmdbApi(getApiKey(context)).getMovies();
+    }
+
+    public MovieResultsPage getTopRated(Context context) {
+        return getMovies(context).getTopRatedMovies("en", 0);
+    }
+
+    public MovieResultsPage getmostPopular(Context context) {
+        return getMovies(context).getPopularMovies("en", 0);
     }
 }
