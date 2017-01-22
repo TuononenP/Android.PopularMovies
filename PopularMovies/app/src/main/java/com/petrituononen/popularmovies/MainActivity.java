@@ -11,6 +11,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
+import com.petrituononen.popularmovies.utilities.BasicUtils;
 import com.petrituononen.popularmovies.utilities.NetworkUtils;
 import com.petrituononen.popularmovies.utilities.TheMovieDbUtils;
 
@@ -44,7 +45,9 @@ public class MainActivity extends AppCompatActivity {
 
         mMoviesList = (RecyclerView) findViewById(R.id.rv_movie_posters);
 
-        GridLayoutManager layoutManager = new GridLayoutManager(this, 2);
+        BasicUtils basicUtils = new BasicUtils();
+        int columns = basicUtils.calculateNoOfColumns(this);
+        GridLayoutManager layoutManager = new GridLayoutManager(this, columns);
         mMoviesList.setLayoutManager(layoutManager);
         mMoviesList.setHasFixedSize(true);
 
