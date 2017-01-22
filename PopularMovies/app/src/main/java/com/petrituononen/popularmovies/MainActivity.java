@@ -45,8 +45,7 @@ public class MainActivity extends AppCompatActivity {
 
         mMoviesList = (RecyclerView) findViewById(R.id.rv_movie_posters);
 
-        BasicUtils basicUtils = new BasicUtils();
-        int columns = basicUtils.calculateNoOfColumns(this);
+        int columns = BasicUtils.calculateNoOfColumns(this);
         GridLayoutManager layoutManager = new GridLayoutManager(this, columns);
         mMoviesList.setLayoutManager(layoutManager);
         mMoviesList.setHasFixedSize(true);
