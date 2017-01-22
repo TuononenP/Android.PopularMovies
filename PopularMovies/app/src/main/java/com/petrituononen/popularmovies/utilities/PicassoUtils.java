@@ -10,6 +10,14 @@ import com.squareup.picasso.Picasso;
  * Created by Petri Tuononen on 20.1.2017.
  */
 public class PicassoUtils {
+    public void loadAlbumArtThumbnail(Context context, ImageView imageView, String imageUrl, int imageWidth, int imageHeight) {
+        Picasso.with(context).load(imageUrl)
+                .error(context.getDrawable(R.drawable.movie_poster_error))
+                .resize(imageWidth, imageHeight)
+                .centerCrop()
+                .into(imageView);
+    }
+
     public void loadAlbumArtThumbnail(Context context, ImageView imageView, String imageUrl) {
         Picasso.with(context).load(imageUrl)
                 .fit()

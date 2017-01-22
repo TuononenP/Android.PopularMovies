@@ -6,11 +6,13 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
+import com.petrituononen.popularmovies.exceptions.NoInternetConnectionException;
 import com.petrituononen.popularmovies.utilities.BasicUtils;
 import com.petrituononen.popularmovies.utilities.NetworkUtils;
 import com.petrituononen.popularmovies.utilities.TheMovieDbUtils;
@@ -23,7 +25,7 @@ import info.movito.themoviedbapi.model.core.MovieResultsPage;
 
 public class MainActivity extends AppCompatActivity {
 
-//    private static final int NUM_LIST_ITEMS = 100;
+    //    private static final int NUM_LIST_ITEMS = 100;
     private MovieAdapter mAdapter;
     private RecyclerView mMoviesList;
     private NetworkUtils mNetworkUtils = new NetworkUtils();
@@ -31,6 +33,9 @@ public class MainActivity extends AppCompatActivity {
     private TheMovieDbUtils mMovieUtils = new TheMovieDbUtils();
     private static final String TOP_RATED = "top-rated";
     private static final String MOST_POPULAR = "most-popular";
+    private static final String TAG = MainActivity.class.getSimpleName();
+    private static int mImageWidth;
+    private static int mImageHeight;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,22 +43,30 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         // show text view if there is no internet connectivity
-        mNoInternetAccessTextView = (TextView)findViewById(R.id.tv_no_internet_access);
-        if(mNetworkUtils.isOnline(this) == false) {
+        mNoInternetAccessTextView = (TextView) findViewById(R.id.tv_no_internet_access);
+        if (mNetworkUtils.isOnline(this) == false) {
             mNoInternetAccessTextView.setVisibility(View.VISIBLE);
         }
 
         mMoviesList = (RecyclerView) findViewById(R.id.rv_movie_posters);
 
-        int columns = BasicUtils.calculateNoOfColumns(this);
-        GridLayoutManager layoutManager = new GridLayoutManager(this, columns);
+        int columnCount = BasicUtils.calculateNoOfColumns(this);
+        setImageWidthAndHeight(this, columnCount);
+        GridLayoutManager layoutManager = new GridLayoutManager(this, columnCount);
         mMoviesList.setLayoutManager(layoutManager);
         mMoviesList.setHasFixedSize(true);
 
-        mAdapter = new MovieAdapter(new ArrayList<MovieDb>());
+        mAdapter = new MovieAdapter(new ArrayList<MovieDb>(), mImageWidth, mImageHeight);
         mMoviesList.setAdapter(mAdapter);
 
         new MovieTask(this, mAdapter, mMoviesList).execute(MOST_POPULAR);
+    }
+
+    public void setImageWidthAndHeight(Context context, int columnCount) {
+        int displayWidth = BasicUtils.getDisplayWidthInPx(context);
+        double scale = 1.5;
+        mImageWidth = (int) Math.ceil(displayWidth / columnCount);
+        mImageHeight = (int) Math.ceil(scale * mImageWidth);
     }
 
     private void showTopRatedMovies() {
@@ -75,8 +88,7 @@ public class MainActivity extends AppCompatActivity {
         int id = item.getItemId();
         if (id == R.id.app_bar_list_most_popular) {
             showMostPopularMovies();
-        }
-        else if (id == R.id.app_bar_list_top_rated) {
+        } else if (id == R.id.app_bar_list_top_rated) {
             showTopRatedMovies();
         }
         return super.onOptionsItemSelected(item);
@@ -88,7 +100,7 @@ public class MainActivity extends AppCompatActivity {
         private MovieAdapter mMovieAdapter;
         private RecyclerView mRecyclerView;
 
-        public MovieTask (Context context, MovieAdapter adapter, RecyclerView recyclerView) {
+        public MovieTask(Context context, MovieAdapter adapter, RecyclerView recyclerView) {
             mContext = context;
             mRecyclerView = recyclerView;
             mMovieAdapter = adapter;
@@ -99,19 +111,30 @@ public class MainActivity extends AppCompatActivity {
             String param = params[0];
             MovieResultsPage resultPage;
             if (param == TOP_RATED) {
-                resultPage = mMovieUtils.getTopRated(mContext, 0);
-                return resultPage.getResults();
-            }
-            else if (param == MOST_POPULAR) {
-                resultPage = mMovieUtils.getMostPopular(mContext, 0);
-                return resultPage.getResults();
+                try {
+                    resultPage = mMovieUtils.getTopRated(mContext, 0);
+                    return resultPage.getResults();
+                } catch (NoInternetConnectionException e) {
+                    String errorText = mContext.getString(R.string.no_internet_warning);
+                    Log.w(TAG, errorText);
+                    e.printStackTrace();
+                }
+            } else if (param == MOST_POPULAR) {
+                try {
+                    resultPage = mMovieUtils.getMostPopular(mContext, 0);
+                    return resultPage.getResults();
+                } catch (NoInternetConnectionException e) {
+                    String errorText = mContext.getString(R.string.no_internet_warning);
+                    Log.w(TAG, errorText);
+                    e.printStackTrace();
+                }
             }
             return null;
         }
 
         @Override
         protected void onPostExecute(List<MovieDb> movieDbs) {
-            mMovieAdapter = new MovieAdapter(movieDbs);
+            mMovieAdapter = new MovieAdapter(movieDbs, mImageWidth, mImageHeight);
             mRecyclerView.setAdapter(mMovieAdapter);
             mMovieAdapter.notifyDataSetChanged();
         }

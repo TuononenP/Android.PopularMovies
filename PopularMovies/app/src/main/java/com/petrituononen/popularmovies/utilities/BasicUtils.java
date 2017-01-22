@@ -27,10 +27,20 @@ public class BasicUtils {
      * @param context
      * @return
      */
-    public static float getDisplayWidth(Context context) {
+    public static float getDisplayWidthInDp(Context context) {
         DisplayMetrics displayMetrics = context.getResources().getDisplayMetrics();
         float dpWidth = displayMetrics.widthPixels / displayMetrics.density;
         return dpWidth;
+    }
+
+    /**
+     * Get display width in pixels.
+     * @param context
+     * @return
+     */
+    public static int getDisplayWidthInPx(Context context) {
+        DisplayMetrics displayMetrics = context.getResources().getDisplayMetrics();
+        return displayMetrics.widthPixels;
     }
 
     /**
@@ -38,9 +48,19 @@ public class BasicUtils {
      * @param context
      * @return
      */
-    public static float getDisplayHeight(Context context) {
+    public static float getDisplayHeightInDp(Context context) {
         DisplayMetrics displayMetrics = context.getResources().getDisplayMetrics();
         float dpHeight = displayMetrics.heightPixels / displayMetrics.density;
         return dpHeight;
+    }
+
+    /**
+     * Get display height in pixels.
+     * @param context
+     * @return
+     */
+    public static int getDisplayHeightInPx(Context context) {
+        DisplayMetrics displayMetrics = context.getResources().getDisplayMetrics();
+        return displayMetrics.heightPixels;
     }
 }

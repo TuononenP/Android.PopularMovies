@@ -26,7 +26,6 @@ import static org.junit.Assert.assertTrue;
 @RunWith(AndroidJUnit4.class)
 public class ExampleInstrumentedTest {
 
-    private static final String TAG = ApiKeyUtils.class.getSimpleName();
     private TheMovieDbUtils mMovieUtils = new TheMovieDbUtils();
     private Context mContext = InstrumentationRegistry.getTargetContext();
     private NetworkUtils mNetworkUtils = new NetworkUtils();
@@ -52,7 +51,6 @@ public class ExampleInstrumentedTest {
 //        String response = mMovieUtils.getMostPopularMovies(mContext);
 //        assertNotEquals("", response);
         MovieResultsPage results = mMovieUtils.getMostPopular(mContext, 0);
-//        Log.d(TAG, "Amount of popular movies: " + results.getResults().size());
         assertTrue(results.getResults().size() > 0);
     }
 

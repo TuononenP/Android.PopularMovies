@@ -20,7 +20,7 @@ import info.movito.themoviedbapi.model.core.MovieResultsPage;
  */
 
 public class TheMovieDbUtils {
-    private static final String TAG = ApiKeyUtils.class.getSimpleName();
+    private static final String TAG = TheMovieDbUtils.class.getSimpleName();
     private static final String API_KEY_PARAM = "api_key";
     private ApiKeyUtils ApiKeyUtil = new ApiKeyUtils();
     private NetworkUtils NetworkUtil = new NetworkUtils();
@@ -36,7 +36,6 @@ public class TheMovieDbUtils {
     }
 
     /**
-     *
      * @param context
      * @param sortOrder For the full list of sort paths see https://developers.themoviedb.org/3/movies
      * @return
@@ -88,15 +87,18 @@ public class TheMovieDbUtils {
         return context.getString(R.string.themoviedb_api_top_rated);
     }
 
-    public TmdbMovies getMovies(Context context) {
+    public TmdbMovies getMovies(Context context) throws NoInternetConnectionException {
+        if (NetworkUtil.isOnline(context) == false) {
+            throw new NoInternetConnectionException();
+        }
         return new TmdbApi(getApiKey(context)).getMovies();
     }
 
-    public MovieResultsPage getTopRated(Context context, int pageNumber) {
+    public MovieResultsPage getTopRated(Context context, int pageNumber) throws NoInternetConnectionException {
         return getMovies(context).getTopRatedMovies("en", pageNumber);
     }
 
-    public MovieResultsPage getMostPopular(Context context, int pageNumber) {
+    public MovieResultsPage getMostPopular(Context context, int pageNumber) throws NoInternetConnectionException {
         return getMovies(context).getPopularMovies("en", pageNumber);
     }
 }

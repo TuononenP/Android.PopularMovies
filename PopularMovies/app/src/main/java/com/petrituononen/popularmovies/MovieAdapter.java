@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
+import com.petrituononen.popularmovies.utilities.BasicUtils;
 import com.petrituononen.popularmovies.utilities.PicassoUtils;
 
 import java.util.List;
@@ -22,10 +23,14 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHol
     private int mNumberOfItems;
     private List<MovieDb> mMovies;
     private Context mContext;
+    private static int mImageWidth;
+    private static int mImageHeight;
 
-    public MovieAdapter(List<MovieDb> movies) {
+    public MovieAdapter(List<MovieDb> movies, int imageWidth, int imageHeight) {
         mMovies = movies;
         mNumberOfItems = movies.size();
+        mImageWidth = imageWidth;
+        mImageHeight = imageHeight;
     }
 
     @Override
@@ -55,11 +60,11 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHol
 
     class MovieViewHolder extends RecyclerView.ViewHolder {
 
-        ImageView moviePosterImageView;
+        ImageView mMoviePosterImageView;
 
         public MovieViewHolder(View itemView) {
             super(itemView);
-            moviePosterImageView = (ImageView)itemView.findViewById(R.id.iv_movie_poster_item);
+            mMoviePosterImageView = (ImageView)itemView.findViewById(R.id.iv_movie_poster_item);
         }
 
         /**
@@ -70,7 +75,8 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHol
          */
         void bind(MovieDb movie, Context context) {
             String moviePosterUrl = formMoviePosterUrl(movie, context);
-            mPicassoUtils.loadAlbumArtThumbnail(context, moviePosterImageView, moviePosterUrl);
+            int columnCount = BasicUtils.calculateNoOfColumns(context);
+            mPicassoUtils.loadAlbumArtThumbnail(context, mMoviePosterImageView, moviePosterUrl, mImageWidth, mImageHeight);
         }
 
         String formMoviePosterUrl(MovieDb movie, Context context) {
