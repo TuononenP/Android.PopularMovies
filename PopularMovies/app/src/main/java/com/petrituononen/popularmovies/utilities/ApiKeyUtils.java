@@ -22,7 +22,7 @@ public class ApiKeyUtils {
             apiKey = IOUtils.ReadFileFromAssetsFolder(context, fileName, encoding);
         } catch (IOException e) {
             String errorText = context.getString(R.string.themoviedb_api_key_not_found_error);
-            Log.e(TAG, errorText);
+            Log.w(TAG, errorText);
             e.printStackTrace();
         }
         return apiKey;

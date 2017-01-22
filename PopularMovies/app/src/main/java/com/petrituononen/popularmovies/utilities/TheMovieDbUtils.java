@@ -5,6 +5,7 @@ import android.net.Uri;
 import android.util.Log;
 
 import com.petrituononen.popularmovies.R;
+import com.petrituononen.popularmovies.exceptions.NoInternetConnectionException;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -30,7 +31,6 @@ public class TheMovieDbUtils {
         return GetMoviesList(context, topRated);
     }
 
-
     /**
      *
      * @param context
@@ -49,14 +49,18 @@ public class TheMovieDbUtils {
                 .build();
         try {
             URL url = new URL(uri.toString());
-            response = NetworkUtils.getResponseFromHttpUrl(url);
+            response = NetworkUtils.getResponseFromHttpUrl(url, context);
         } catch (MalformedURLException e) {
             String errorText = context.getString(R.string.themoviedb_url_malformed_error);
-            Log.e(TAG, errorText);
+            Log.w(TAG, errorText);
             e.printStackTrace();
         } catch (IOException e) {
             String errorText = context.getString(R.string.themoviedb_api_call_error);
-            Log.e(TAG, errorText);
+            Log.w(TAG, errorText);
+            e.printStackTrace();
+        } catch (NoInternetConnectionException e) {
+            String errorText = context.getString(R.string.no_internet_warning);
+            Log.w(TAG, errorText);
             e.printStackTrace();
         }
         return response;
