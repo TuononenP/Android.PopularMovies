@@ -29,7 +29,6 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.List
     //    private static final int NUM_LIST_ITEMS = 100;
     private MovieAdapter mAdapter;
     private RecyclerView mMoviesList;
-    private NetworkUtils mNetworkUtils = new NetworkUtils();
     private TextView mNoInternetAccessTextView;
     private TheMovieDbUtils mMovieUtils = new TheMovieDbUtils();
     private static final String TOP_RATED = "top-rated";
@@ -45,7 +44,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.List
 
         // show text view if there is no internet connectivity
         mNoInternetAccessTextView = (TextView) findViewById(R.id.tv_no_internet_access);
-        if (mNetworkUtils.isOnline(this) == false) {
+        if (NetworkUtils.isOnline(this) == false) {
             mNoInternetAccessTextView.setVisibility(View.VISIBLE);
         }
 
@@ -60,7 +59,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.List
         mAdapter = new MovieAdapter(new ArrayList<MovieDb>(), mImageWidth, mImageHeight, this);
         mMoviesList.setAdapter(mAdapter);
 
-        new MovieTask(this, mAdapter, mMoviesList, this).execute(MOST_POPULAR);
+        showMostPopularMovies();
     }
 
     public void setImageWidthAndHeight(Context context, int columnCount) {
@@ -142,11 +141,18 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.List
                     }
                     break;
             }
-            return null;
+            return new ArrayList<MovieDb>();
         }
 
         @Override
         protected void onPostExecute(List<MovieDb> movieDbs) {
+            // check internet connectivity and display warning if needed
+            if (NetworkUtils.isOnline(mContext)) {
+                mNoInternetAccessTextView.setVisibility(View.INVISIBLE);
+            }
+            else {
+                mNoInternetAccessTextView.setVisibility(View.VISIBLE);
+            }
             mMovieAdapter = new MovieAdapter(movieDbs, mImageWidth, mImageHeight, mListener);
             mRecyclerView.setAdapter(mMovieAdapter);
             mMovieAdapter.notifyDataSetChanged();

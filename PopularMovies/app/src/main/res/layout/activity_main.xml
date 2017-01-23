@@ -15,5 +15,8 @@
         android:layout_height="wrap_content"
         android:text="@string/no_internet_warning"
         android:visibility="invisible"
+        android:textColor="@color/colorAccent"
+        android:textSize="22sp"
+        android:padding="20dp"
         android:id="@+id/tv_no_internet_access"/>
 </FrameLayout>

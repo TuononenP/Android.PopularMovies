@@ -7,9 +7,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
-import com.petrituononen.popularmovies.utilities.BasicUtils;
 import com.petrituononen.popularmovies.utilities.PicassoUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import info.movito.themoviedbapi.model.MovieDb;
@@ -33,8 +33,13 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHol
 
     public MovieAdapter(List<MovieDb> movies, int imageWidth, int imageHeight,
                         ListItemClickListener listener) {
-        mMovies = movies;
-        mNumberOfItems = movies.size();
+        if (movies != null) {
+            mMovies = movies;
+            mNumberOfItems = movies.size();
+        }
+        else {
+            mMovies = new ArrayList<MovieDb>();
+        }
         mImageWidth = imageWidth;
         mImageHeight = imageHeight;
         mOnClickListener = listener;
