@@ -120,24 +120,27 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.List
         protected List<MovieDb> doInBackground(String... params) {
             String param = params[0];
             MovieResultsPage resultPage;
-            if (param == TOP_RATED) {
-                try {
-                    resultPage = mMovieUtils.getTopRated(mContext, 0);
-                    return resultPage.getResults();
-                } catch (NoInternetConnectionException e) {
-                    String errorText = mContext.getString(R.string.no_internet_warning);
-                    Log.w(TAG, errorText);
-                    e.printStackTrace();
-                }
-            } else if (param == MOST_POPULAR) {
-                try {
-                    resultPage = mMovieUtils.getMostPopular(mContext, 0);
-                    return resultPage.getResults();
-                } catch (NoInternetConnectionException e) {
-                    String errorText = mContext.getString(R.string.no_internet_warning);
-                    Log.w(TAG, errorText);
-                    e.printStackTrace();
-                }
+            switch (param) {
+                case TOP_RATED:
+                    try {
+                        resultPage = mMovieUtils.getTopRated(mContext, 0);
+                        return resultPage.getResults();
+                    } catch (NoInternetConnectionException e) {
+                        String errorText = mContext.getString(R.string.no_internet_warning);
+                        Log.w(TAG, errorText);
+                        e.printStackTrace();
+                    }
+                    break;
+                case MOST_POPULAR:
+                    try {
+                        resultPage = mMovieUtils.getMostPopular(mContext, 0);
+                        return resultPage.getResults();
+                    } catch (NoInternetConnectionException e) {
+                        String errorText = mContext.getString(R.string.no_internet_warning);
+                        Log.w(TAG, errorText);
+                        e.printStackTrace();
+                    }
+                    break;
             }
             return null;
         }
