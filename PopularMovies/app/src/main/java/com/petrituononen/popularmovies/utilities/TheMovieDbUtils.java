@@ -23,8 +23,6 @@ public class TheMovieDbUtils {
     private static final String TAG = TheMovieDbUtils.class.getSimpleName();
     private static final String API_KEY_PARAM = "api_key";
     private ApiKeyUtils ApiKeyUtil = new ApiKeyUtils();
-    private NetworkUtils NetworkUtil = new NetworkUtils();
-
 
 //    public String getMostPopularMovies(Context context) {
 //        String mostPopular = getMostPopularPath(context);
@@ -71,26 +69,26 @@ public class TheMovieDbUtils {
 //        return response;
 //    }
 
+//    private String getBasePath(Context context) {
+//        return context.getString(R.string.themoviedb_api_basepath);
+//    }
+//
+//    private String getMostPopularPath(Context context) {
+//        return context.getString(R.string.themoviedb_api_most_popular);
+//    }
+//
+//    private String getTopRatedPath(Context context) {
+//        return context.getString(R.string.themoviedb_api_top_rated);
+//    }
+
     private String getApiKey(Context context) {
         String apiKey = "";
         apiKey = ApiKeyUtil.getTheMovieDbApiKey(context);
         return apiKey;
     }
 
-    private String getBasePath(Context context) {
-        return context.getString(R.string.themoviedb_api_basepath);
-    }
-
-    private String getMostPopularPath(Context context) {
-        return context.getString(R.string.themoviedb_api_most_popular);
-    }
-
-    private String getTopRatedPath(Context context) {
-        return context.getString(R.string.themoviedb_api_top_rated);
-    }
-
     public TmdbMovies getMovies(Context context) throws NoInternetConnectionException {
-        if (NetworkUtil.isOnline(context) == false) {
+        if (NetworkUtils.isOnline(context) == false) {
             throw new NoInternetConnectionException();
         }
         return new TmdbApi(getApiKey(context)).getMovies();
