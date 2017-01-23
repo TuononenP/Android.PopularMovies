@@ -1,6 +1,7 @@
 package com.petrituononen.popularmovies;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -23,7 +24,7 @@ import java.util.List;
 import info.movito.themoviedbapi.model.MovieDb;
 import info.movito.themoviedbapi.model.core.MovieResultsPage;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements MovieAdapter.ListItemClickListener {
 
     //    private static final int NUM_LIST_ITEMS = 100;
     private MovieAdapter mAdapter;
@@ -56,10 +57,10 @@ public class MainActivity extends AppCompatActivity {
         mMoviesList.setLayoutManager(layoutManager);
         mMoviesList.setHasFixedSize(true);
 
-        mAdapter = new MovieAdapter(new ArrayList<MovieDb>(), mImageWidth, mImageHeight);
+        mAdapter = new MovieAdapter(new ArrayList<MovieDb>(), mImageWidth, mImageHeight, this);
         mMoviesList.setAdapter(mAdapter);
 
-        new MovieTask(this, mAdapter, mMoviesList).execute(MOST_POPULAR);
+        new MovieTask(this, mAdapter, mMoviesList, this).execute(MOST_POPULAR);
     }
 
     public void setImageWidthAndHeight(Context context, int columnCount) {
@@ -70,11 +71,11 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void showTopRatedMovies() {
-        new MovieTask(this, mAdapter, mMoviesList).execute(TOP_RATED);
+        new MovieTask(this, mAdapter, mMoviesList, this).execute(TOP_RATED);
     }
 
     private void showMostPopularMovies() {
-        new MovieTask(this, mAdapter, mMoviesList).execute(MOST_POPULAR);
+        new MovieTask(this, mAdapter, mMoviesList, this).execute(MOST_POPULAR);
     }
 
     @Override
@@ -94,16 +95,25 @@ public class MainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    @Override
+    public void onListItemClick(int clickedItemIndex) {
+        Intent detailIntent = new Intent(MainActivity.this, DetailActivity.class);
+        startActivity(detailIntent);
+    }
+
     public class MovieTask extends AsyncTask<String, Void, List<MovieDb>> {
 
         private Context mContext;
         private MovieAdapter mMovieAdapter;
         private RecyclerView mRecyclerView;
+        private MovieAdapter.ListItemClickListener mListener;
 
-        public MovieTask(Context context, MovieAdapter adapter, RecyclerView recyclerView) {
+        public MovieTask(Context context, MovieAdapter adapter, RecyclerView recyclerView,
+                         MovieAdapter.ListItemClickListener listener) {
             mContext = context;
             mRecyclerView = recyclerView;
             mMovieAdapter = adapter;
+            mListener = listener;
         }
 
         @Override
@@ -134,7 +144,7 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         protected void onPostExecute(List<MovieDb> movieDbs) {
-            mMovieAdapter = new MovieAdapter(movieDbs, mImageWidth, mImageHeight);
+            mMovieAdapter = new MovieAdapter(movieDbs, mImageWidth, mImageHeight, mListener);
             mRecyclerView.setAdapter(mMovieAdapter);
             mMovieAdapter.notifyDataSetChanged();
         }

@@ -23,7 +23,8 @@ public class NetworkUtils {
      * @return The contents of the HTTP response.
      * @throws IOException Related to network and stream reading
      */
-    public static String getResponseFromHttpUrl(URL url, Context context) throws IOException, NoInternetConnectionException {
+    public static String getResponseFromHttpUrl(URL url, Context context)
+            throws IOException, NoInternetConnectionException {
         if (isOnline(context) == false) {
             throw new NoInternetConnectionException();
         }

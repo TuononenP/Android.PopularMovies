@@ -25,12 +25,19 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHol
     private Context mContext;
     private static int mImageWidth;
     private static int mImageHeight;
+    final private ListItemClickListener mOnClickListener;
 
-    public MovieAdapter(List<MovieDb> movies, int imageWidth, int imageHeight) {
+    public interface ListItemClickListener {
+        void onListItemClick(int clickedItemIndex);
+    }
+
+    public MovieAdapter(List<MovieDb> movies, int imageWidth, int imageHeight,
+                        ListItemClickListener listener) {
         mMovies = movies;
         mNumberOfItems = movies.size();
         mImageWidth = imageWidth;
         mImageHeight = imageHeight;
+        mOnClickListener = listener;
     }
 
     @Override
@@ -58,13 +65,14 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHol
         holder.bind(movie, mContext);
     }
 
-    class MovieViewHolder extends RecyclerView.ViewHolder {
+    class MovieViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
         ImageView mMoviePosterImageView;
 
         public MovieViewHolder(View itemView) {
             super(itemView);
             mMoviePosterImageView = (ImageView)itemView.findViewById(R.id.iv_movie_poster_item);
+            itemView.setOnClickListener(this);
         }
 
         /**
@@ -75,8 +83,8 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHol
          */
         void bind(MovieDb movie, Context context) {
             String moviePosterUrl = formMoviePosterUrl(movie, context);
-            int columnCount = BasicUtils.calculateNoOfColumns(context);
-            mPicassoUtils.loadAlbumArtThumbnail(context, mMoviePosterImageView, moviePosterUrl, mImageWidth, mImageHeight);
+            mPicassoUtils.loadAlbumArtThumbnail(context, mMoviePosterImageView,
+                    moviePosterUrl, mImageWidth, mImageHeight);
         }
 
         String formMoviePosterUrl(MovieDb movie, Context context) {
@@ -85,6 +93,11 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHol
             String moviePosterSize = context.getString(R.string.themoviedb_api_movie_poster_size);
             String moviePosterUrl = movieBasePath + moviePosterSize + moviePosterPath;
             return moviePosterUrl;
+        }
+
+        @Override
+        public void onClick(View v) {
+            mOnClickListener.onListItemClick(getAdapterPosition());
         }
     }
 }

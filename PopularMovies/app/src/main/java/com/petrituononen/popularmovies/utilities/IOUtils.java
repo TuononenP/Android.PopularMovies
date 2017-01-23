@@ -11,7 +11,8 @@ import java.io.InputStream;
  * Created by Petri Tuononen on 20.1.2017.
  */
 public class IOUtils {
-    public String readFileFromAssetsFolder(Context context, String fileName, String encoding) throws IOException {
+    public String readFileFromAssetsFolder(Context context, String fileName, String encoding)
+            throws IOException {
         AssetManager am = context.getAssets();
         InputStream is = am.open(fileName);
         return convertInputStreamToString(is, encoding);
