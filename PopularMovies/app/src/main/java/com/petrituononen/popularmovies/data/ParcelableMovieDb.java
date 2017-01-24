@@ -113,7 +113,6 @@ public class ParcelableMovieDb extends IdElement implements Multi, Parcelable {
     @JsonProperty("overview")
     private String overview;
 
-    // todo still there??
     @JsonProperty("imdb_id")
     private String imdbID;
 

@@ -27,10 +27,15 @@ import java.util.List;
 import info.movito.themoviedbapi.model.MovieDb;
 import info.movito.themoviedbapi.model.core.MovieResultsPage;
 
+/**
+ * Created by Petri Tuononen on 20.1.2017.
+ * Main activity lists movies by selected sort order.
+ */
 public class MainActivity extends AppCompatActivity implements MovieAdapter.ListItemClickListener {
 
     private static final String MOVIE_LIST_SAVE_STATE = "saved-movie-list";
     private static final String LIST_INSTANCE_STATE = "list-instance-state";
+    private static final String CLICKED_MOVIE_DB_STATE = "clicked_movie_db_state";
     private MovieAdapter mAdapter;
     private RecyclerView mMoviesList;
     private TextView mNoInternetAccessTextView;
@@ -48,8 +53,10 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.List
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // show text view if there is no internet connectivity
         mNoInternetAccessTextView = (TextView) findViewById(R.id.tv_no_internet_access);
+        mMoviesList = (RecyclerView) findViewById(R.id.rv_movie_posters);
+
+        // show text view if there is no internet connectivity
         if (NetworkUtils.isOnline(this) == false) {
             mNoInternetAccessTextView.setVisibility(View.VISIBLE);
         }
@@ -59,7 +66,6 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.List
         int columnCount = BasicUtils.calculateNoOfColumns(this);
         setImageWidthAndHeight(this, columnCount);
 
-        mMoviesList = (RecyclerView) findViewById(R.id.rv_movie_posters);
         mLayoutManager = new GridLayoutManager(this, columnCount);
         mMoviesList.setLayoutManager(mLayoutManager);
         mMoviesList.setHasFixedSize(true);
@@ -79,6 +85,10 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.List
         }
 
         if (mMoviesList.getAdapter() == null) {
+            // these two lines avoid No adapter attached; skipping layout error
+            mAdapter = new MovieAdapter(new ArrayList<ParcelableMovieDb>(), mImageWidth, mImageHeight, this);
+            mMoviesList.setAdapter(mAdapter);
+
             showMostPopularMovies();
         }
     }
@@ -133,6 +143,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.List
     @Override
     public void onListItemClick(int clickedItemIndex) {
         Intent detailIntent = new Intent(MainActivity.this, DetailActivity.class);
+        detailIntent.putExtra(CLICKED_MOVIE_DB_STATE, (Parcelable) mMovies.get(clickedItemIndex));
         startActivity(detailIntent);
     }
 
