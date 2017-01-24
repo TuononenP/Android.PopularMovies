@@ -13,6 +13,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.petrituononen.popularmovies.data.ParcelableMovieDb;
@@ -42,6 +43,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.List
     private GridLayoutManager mLayoutManager;
     private static ArrayList<ParcelableMovieDb> mMovies = new ArrayList<>();
     private TheMovieDbUtils mMovieUtils = new TheMovieDbUtils();
+    private ProgressBar mLoadingIndicator;
     private static final String TOP_RATED = "top-rated";
     private static final String MOST_POPULAR = "most-popular";
     private static final String TAG = MainActivity.class.getSimpleName();
@@ -55,6 +57,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.List
 
         mNoInternetAccessTextView = (TextView) findViewById(R.id.tv_no_internet_access);
         mMoviesList = (RecyclerView) findViewById(R.id.rv_movie_posters);
+        mLoadingIndicator = (ProgressBar) findViewById(R.id.pb_loading_indicator);
 
         // show text view if there is no internet connectivity
         if (NetworkUtils.isOnline(this) == false) {
@@ -163,6 +166,12 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.List
         }
 
         @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            mLoadingIndicator.setVisibility(View.VISIBLE);
+        }
+
+        @Override
         protected ArrayList<ParcelableMovieDb> doInBackground(String... params) {
             String param = params[0];
             List<MovieDb> movieList = new ArrayList<>();
@@ -202,6 +211,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.List
 
         @Override
         protected void onPostExecute(ArrayList<ParcelableMovieDb> movieDbs) {
+            mLoadingIndicator.setVisibility(View.INVISIBLE);
             // check internet connectivity and display warning if needed
             if (NetworkUtils.isOnline(mContext)) {
                 mNoInternetAccessTextView.setVisibility(View.INVISIBLE);
