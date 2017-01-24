@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -29,6 +30,7 @@ import info.movito.themoviedbapi.model.core.MovieResultsPage;
 public class MainActivity extends AppCompatActivity implements MovieAdapter.ListItemClickListener {
 
     private static final String MOVIE_LIST_SAVE_STATE = "saved-movie-list";
+    private static final String CLICKED_MOVIE_DB_STATE = "clicked_movie_db_state";
     private MovieAdapter mAdapter;
     private RecyclerView mMoviesList;
     private TextView mNoInternetAccessTextView;
@@ -125,6 +127,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.List
     @Override
     public void onListItemClick(int clickedItemIndex) {
         Intent detailIntent = new Intent(MainActivity.this, DetailActivity.class);
+        detailIntent.putExtra(CLICKED_MOVIE_DB_STATE, (Parcelable) mMovies.get(clickedItemIndex));
         startActivity(detailIntent);
     }
 
