@@ -41,6 +41,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.List
     private RecyclerView mMoviesList;
     private TextView mNoInternetAccessTextView;
     private GridLayoutManager mLayoutManager;
+    private Parcelable mListState;
     private static ArrayList<ParcelableMovieDb> mMovies = new ArrayList<>();
     private TheMovieDbUtils mMovieUtils = new TheMovieDbUtils();
     private ProgressBar mLoadingIndicator;
@@ -82,8 +83,8 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.List
                 }
             }
             if (savedInstanceState.containsKey(LIST_INSTANCE_STATE)) {
-                Parcelable listState = savedInstanceState.getParcelable(LIST_INSTANCE_STATE);
-                mMoviesList.getLayoutManager().onRestoreInstanceState(listState);
+                mListState = savedInstanceState.getParcelable(LIST_INSTANCE_STATE);
+                mMoviesList.getLayoutManager().onRestoreInstanceState(mListState);
             }
         }
 
@@ -100,8 +101,23 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.List
     public void onSaveInstanceState(Bundle saveInstanceState) {
         super.onSaveInstanceState(saveInstanceState);
         saveInstanceState.putParcelableArrayList(MOVIE_LIST_SAVE_STATE, mMovies);
-        Parcelable listState = mMoviesList.getLayoutManager().onSaveInstanceState();
-        saveInstanceState.putParcelable(LIST_INSTANCE_STATE, listState);
+        mListState = mMoviesList.getLayoutManager().onSaveInstanceState();
+        saveInstanceState.putParcelable(LIST_INSTANCE_STATE, mListState);
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        mListState = savedInstanceState.getParcelable(LIST_INSTANCE_STATE);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (mListState != null) {
+            mLayoutManager.onRestoreInstanceState(mListState);
+        }
+        mListState = null;
     }
 
     /**
