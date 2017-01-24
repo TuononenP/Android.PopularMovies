@@ -7,12 +7,14 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
+import com.petrituononen.popularmovies.data.ParcelableMovieDb;
 import com.petrituononen.popularmovies.exceptions.NoInternetConnectionException;
 import com.petrituononen.popularmovies.utilities.BasicUtils;
 import com.petrituononen.popularmovies.utilities.NetworkUtils;
@@ -26,10 +28,12 @@ import info.movito.themoviedbapi.model.core.MovieResultsPage;
 
 public class MainActivity extends AppCompatActivity implements MovieAdapter.ListItemClickListener {
 
-    //    private static final int NUM_LIST_ITEMS = 100;
+    private static final String MOVIE_LIST_SAVE_STATE = "saved-movie-list";
     private MovieAdapter mAdapter;
     private RecyclerView mMoviesList;
     private TextView mNoInternetAccessTextView;
+    private GridLayoutManager mLayoutManager;
+    private static ArrayList<ParcelableMovieDb> mMovies = new ArrayList<>();
     private TheMovieDbUtils mMovieUtils = new TheMovieDbUtils();
     private static final String TOP_RATED = "top-rated";
     private static final String MOST_POPULAR = "most-popular";
@@ -48,20 +52,44 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.List
             mNoInternetAccessTextView.setVisibility(View.VISIBLE);
         }
 
-        mMoviesList = (RecyclerView) findViewById(R.id.rv_movie_posters);
-
+        // calculate responsive column count and image width and height
+        // to accommodate varying display sizes
         int columnCount = BasicUtils.calculateNoOfColumns(this);
         setImageWidthAndHeight(this, columnCount);
-        GridLayoutManager layoutManager = new GridLayoutManager(this, columnCount);
-        mMoviesList.setLayoutManager(layoutManager);
+
+        mMoviesList = (RecyclerView) findViewById(R.id.rv_movie_posters);
+        mLayoutManager = new GridLayoutManager(this, columnCount);
+        mMoviesList.setLayoutManager(mLayoutManager);
         mMoviesList.setHasFixedSize(true);
 
-        mAdapter = new MovieAdapter(new ArrayList<MovieDb>(), mImageWidth, mImageHeight, this);
-        mMoviesList.setAdapter(mAdapter);
+        if (savedInstanceState != null) {
+            if (savedInstanceState.containsKey(MOVIE_LIST_SAVE_STATE)) {
+                ArrayList<ParcelableMovieDb> moviesParcelable = savedInstanceState.getParcelableArrayList(MOVIE_LIST_SAVE_STATE);
+                if (moviesParcelable != null && moviesParcelable.size() > 0) {
+                    mAdapter = new MovieAdapter(moviesParcelable, mImageWidth, mImageHeight, this);
+                    mMoviesList.setAdapter(mAdapter);
+                }
+            }
+        }
 
-        showMostPopularMovies();
+        if (mMoviesList.getAdapter() == null) {
+            showMostPopularMovies();
+        }
     }
 
+    @Override
+    public void onSaveInstanceState(Bundle saveInstanceState) {
+        super.onSaveInstanceState(saveInstanceState);
+        saveInstanceState.putParcelableArrayList(MOVIE_LIST_SAVE_STATE, mMovies);
+    }
+
+    /**
+     * Calculate resized image width and height to stretch movie posters to fit
+     * columns and display height perfectly but maintaining aspect ratio
+     * aim is 2x2 in portrait mode and 3x1 in landscape mode for mobile phone.
+     * @param context
+     * @param columnCount
+     */
     public void setImageWidthAndHeight(Context context, int columnCount) {
         int displayWidth = BasicUtils.getDisplayWidthInPx(context);
         double scale = 1.5;
@@ -100,7 +128,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.List
         startActivity(detailIntent);
     }
 
-    public class MovieTask extends AsyncTask<String, Void, List<MovieDb>> {
+    public class MovieTask extends AsyncTask<String, Void, ArrayList<ParcelableMovieDb>> {
 
         private Context mContext;
         private MovieAdapter mMovieAdapter;
@@ -116,36 +144,45 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.List
         }
 
         @Override
-        protected List<MovieDb> doInBackground(String... params) {
+        protected ArrayList<ParcelableMovieDb> doInBackground(String... params) {
             String param = params[0];
-            MovieResultsPage resultPage;
-            switch (param) {
-                case TOP_RATED:
-                    try {
-                        resultPage = mMovieUtils.getTopRated(mContext, 0);
-                        return resultPage.getResults();
-                    } catch (NoInternetConnectionException e) {
-                        String errorText = mContext.getString(R.string.no_internet_warning);
-                        Log.w(TAG, errorText);
-                        e.printStackTrace();
+            List<MovieDb> movieList = new ArrayList<>();
+            ArrayList<ParcelableMovieDb> movies = new ArrayList<>();
+            if (param != null && TextUtils.isEmpty(param) == false) {
+                switch (param) {
+                    case TOP_RATED:
+                        try {
+                            MovieResultsPage resultPage = mMovieUtils.getTopRated(mContext, 0);
+                            movieList = resultPage.getResults();
+                        } catch (NoInternetConnectionException e) {
+                            String errorText = mContext.getString(R.string.no_internet_warning);
+                            Log.w(TAG, errorText);
+                            e.printStackTrace();
+                        }
+                        break;
+                    case MOST_POPULAR:
+                        try {
+                            MovieResultsPage resultPage = mMovieUtils.getMostPopular(mContext, 0);
+                            movieList = resultPage.getResults();
+                        } catch (NoInternetConnectionException e) {
+                            String errorText = mContext.getString(R.string.no_internet_warning);
+                            Log.w(TAG, errorText);
+                            e.printStackTrace();
+                        }
+                        break;
+                }
+                // convert to parcelable
+                if (movieList != null && movieList.size() > 0) {
+                    for (MovieDb movie : movieList) {
+                        movies.add(new ParcelableMovieDb(movie));
                     }
-                    break;
-                case MOST_POPULAR:
-                    try {
-                        resultPage = mMovieUtils.getMostPopular(mContext, 0);
-                        return resultPage.getResults();
-                    } catch (NoInternetConnectionException e) {
-                        String errorText = mContext.getString(R.string.no_internet_warning);
-                        Log.w(TAG, errorText);
-                        e.printStackTrace();
-                    }
-                    break;
+                }
             }
-            return new ArrayList<MovieDb>();
+            return movies;
         }
 
         @Override
-        protected void onPostExecute(List<MovieDb> movieDbs) {
+        protected void onPostExecute(ArrayList<ParcelableMovieDb> movieDbs) {
             // check internet connectivity and display warning if needed
             if (NetworkUtils.isOnline(mContext)) {
                 mNoInternetAccessTextView.setVisibility(View.INVISIBLE);
@@ -153,6 +190,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.List
             else {
                 mNoInternetAccessTextView.setVisibility(View.VISIBLE);
             }
+            mMovies = movieDbs;
             mMovieAdapter = new MovieAdapter(movieDbs, mImageWidth, mImageHeight, mListener);
             mRecyclerView.setAdapter(mMovieAdapter);
             mMovieAdapter.notifyDataSetChanged();

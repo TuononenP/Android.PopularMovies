@@ -12,6 +12,7 @@ public class BasicUtils {
 
     /**
      * Calculates number of columns for GridLayoutManager.
+     * ie. how many movies posters can fit on display.
      * @param context
      * @return
      */

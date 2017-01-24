@@ -7,12 +7,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
+import com.petrituononen.popularmovies.data.ParcelableMovieDb;
 import com.petrituononen.popularmovies.utilities.PicassoUtils;
 
 import java.util.ArrayList;
-import java.util.List;
-
-import info.movito.themoviedbapi.model.MovieDb;
 
 /**
  * Created by Petri Tuononen on 22.1.2017.
@@ -21,7 +19,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHol
     private static final String TAG = MovieAdapter.class.getSimpleName();
     private PicassoUtils mPicassoUtils = new PicassoUtils();
     private int mNumberOfItems;
-    private List<MovieDb> mMovies;
+    private ArrayList<ParcelableMovieDb> mMovies;
     private Context mContext;
     private static int mImageWidth;
     private static int mImageHeight;
@@ -31,14 +29,14 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHol
         void onListItemClick(int clickedItemIndex);
     }
 
-    public MovieAdapter(List<MovieDb> movies, int imageWidth, int imageHeight,
+    public MovieAdapter(ArrayList<ParcelableMovieDb> movies, int imageWidth, int imageHeight,
                         ListItemClickListener listener) {
         if (movies != null) {
             mMovies = movies;
             mNumberOfItems = movies.size();
         }
         else {
-            mMovies = new ArrayList<MovieDb>();
+            mMovies = new ArrayList<ParcelableMovieDb>();
         }
         mImageWidth = imageWidth;
         mImageHeight = imageHeight;
@@ -66,7 +64,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHol
 
     @Override
     public void onBindViewHolder(MovieViewHolder holder, int position) {
-        MovieDb movie = mMovies.get(position);
+        ParcelableMovieDb movie = mMovies.get(position);
         holder.bind(movie, mContext);
     }
 
@@ -86,13 +84,13 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHol
          * @param movie
          * @param context
          */
-        void bind(MovieDb movie, Context context) {
+        void bind(ParcelableMovieDb movie, Context context) {
             String moviePosterUrl = formMoviePosterUrl(movie, context);
             mPicassoUtils.loadAlbumArtThumbnail(context, mMoviePosterImageView,
                     moviePosterUrl, mImageWidth, mImageHeight);
         }
 
-        String formMoviePosterUrl(MovieDb movie, Context context) {
+        String formMoviePosterUrl(ParcelableMovieDb movie, Context context) {
             String moviePosterPath = movie.getPosterPath();
             String movieBasePath = context.getString(R.string.themoviedb_api_movie_poster_basepath);
             String moviePosterSize = context.getString(R.string.themoviedb_api_movie_poster_size);
