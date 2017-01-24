@@ -1,6 +1,7 @@
 package com.petrituononen.popularmovies.utilities;
 
 import android.content.Context;
+import android.text.TextUtils;
 import android.util.Log;
 
 import com.petrituononen.popularmovies.R;
@@ -21,9 +22,13 @@ public class ApiKeyUtils {
             String encoding = context.getString(R.string.default_file_encoding);
             apiKey = mIOUtils.readFileFromAssetsFolder(context, fileName, encoding);
         } catch (IOException e) {
-            String errorText = context.getString(R.string.themoviedb_api_key_not_found_error);
+            String errorText = context.getString(R.string.themoviedb_api_key_not_found_warning);
             Log.w(TAG, errorText);
             e.printStackTrace();
+        }
+
+        if (TextUtils.isEmpty(apiKey)) {
+            Log.w(TAG, context.getString(R.string.themoviedb_api_key_empty_warning));
         }
         return apiKey;
     }
