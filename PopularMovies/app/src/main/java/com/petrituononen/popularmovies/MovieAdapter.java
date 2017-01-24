@@ -36,7 +36,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHol
             mNumberOfItems = movies.size();
         }
         else {
-            mMovies = new ArrayList<ParcelableMovieDb>();
+            mMovies = new ArrayList<>();
         }
         mImageWidth = imageWidth;
         mImageHeight = imageHeight;
