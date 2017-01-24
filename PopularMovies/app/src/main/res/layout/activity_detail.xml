@@ -10,4 +10,56 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="com.petrituononen.popularmovies.DetailActivity">
 
+    <TextView
+        android:text="Original title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentStart="true"
+        android:id="@+id/original_title_textview" />
+
+    <ImageView
+        android:layout_width="140dp"
+        android:layout_height="200dp"
+        android:layout_marginTop="13dp"
+        android:id="@+id/movie_thumbnail_imageview"
+        android:layout_below="@+id/original_title_textview"
+        android:layout_alignParentStart="true"
+        android:background="#c0c0c0" />
+
+    <TextView
+        android:text="Release year"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@+id/movie_thumbnail_imageview"
+        android:layout_toEndOf="@+id/movie_thumbnail_imageview"
+        android:layout_marginStart="32dp"
+        android:id="@+id/movie_release_year_textview" />
+
+    <TextView
+        android:text="Duration in minutes"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/movie_duration_in_minutes_textview"
+        android:layout_below="@+id/movie_release_year_textview"
+        android:layout_alignStart="@+id/movie_release_year_textview"
+        android:layout_marginTop="12dp" />
+
+    <TextView
+        android:text="User rating"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/movie_duration_in_minutes_textview"
+        android:layout_alignStart="@+id/movie_duration_in_minutes_textview"
+        android:layout_marginTop="13dp"
+        android:id="@+id/movie_rating_textview" />
+
+    <TextView
+        android:text="Plot synopsis"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/movie_thumbnail_imageview"
+        android:layout_alignParentStart="true"
+        android:layout_marginTop="26dp"
+        android:id="@+id/plot_synopsis_textview" />
 </RelativeLayout>
