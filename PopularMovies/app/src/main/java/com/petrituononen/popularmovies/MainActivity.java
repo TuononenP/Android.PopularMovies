@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -29,6 +30,7 @@ import info.movito.themoviedbapi.model.core.MovieResultsPage;
 public class MainActivity extends AppCompatActivity implements MovieAdapter.ListItemClickListener {
 
     private static final String MOVIE_LIST_SAVE_STATE = "saved-movie-list";
+    private static final String LIST_INSTANCE_STATE = "list-instance-state";
     private MovieAdapter mAdapter;
     private RecyclerView mMoviesList;
     private TextView mNoInternetAccessTextView;
@@ -70,6 +72,10 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.List
                     mMoviesList.setAdapter(mAdapter);
                 }
             }
+            if (savedInstanceState.containsKey(LIST_INSTANCE_STATE)) {
+                Parcelable listState = savedInstanceState.getParcelable(LIST_INSTANCE_STATE);
+                mMoviesList.getLayoutManager().onRestoreInstanceState(listState);
+            }
         }
 
         if (mMoviesList.getAdapter() == null) {
@@ -81,6 +87,8 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.List
     public void onSaveInstanceState(Bundle saveInstanceState) {
         super.onSaveInstanceState(saveInstanceState);
         saveInstanceState.putParcelableArrayList(MOVIE_LIST_SAVE_STATE, mMovies);
+        Parcelable listState = mMoviesList.getLayoutManager().onSaveInstanceState();
+        saveInstanceState.putParcelable(LIST_INSTANCE_STATE, listState);
     }
 
     /**
