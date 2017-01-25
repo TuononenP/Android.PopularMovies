@@ -2,9 +2,11 @@ package com.petrituononen.popularmovies;
 
 import android.content.Context;
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Parcelable;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.AsyncTaskLoader;
+import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -34,7 +36,10 @@ import info.movito.themoviedbapi.model.core.MovieResultsPage;
  * Created by Petri Tuononen on 20.1.2017.
  * Main activity lists movies by selected sort order.
  */
-public class MainActivity extends AppCompatActivity implements MovieAdapter.ListItemClickListener {
+public class MainActivity
+        extends AppCompatActivity
+        implements MovieAdapter.ListItemClickListener,
+        LoaderManager.LoaderCallbacks<ArrayList<ParcelableMovieDb>> {
 
     private static final String TAG = MainActivity.class.getSimpleName();
     private static final String MOVIE_LIST_SAVE_STATE = "saved-movie-list";
@@ -42,6 +47,8 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.List
     private static final String CLICKED_MOVIE_DB_STATE = "clicked_movie_db_state";
     private static final String TOP_RATED = "top-rated";
     private static final String MOST_POPULAR = "most-popular";
+    private static final String SORT_ORDER = "sort-order";
+    private static final int MOVIE_POSTER_LOADER = 77;
 
     private static int mImageWidth;
     private static int mImageHeight;
@@ -138,11 +145,30 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.List
     }
 
     private void showTopRatedMovies() {
-        new MovieTask(this, mAdapter, mMoviesList, this).execute(TOP_RATED);
+        Bundle bundle = new Bundle();
+        bundle.putString(SORT_ORDER, TOP_RATED);
+        startMoviePosterLoader(bundle);
     }
 
     private void showMostPopularMovies() {
-        new MovieTask(this, mAdapter, mMoviesList, this).execute(MOST_POPULAR);
+        Bundle bundle = new Bundle();
+        bundle.putString(SORT_ORDER, MOST_POPULAR);
+        startMoviePosterLoader(bundle);
+    }
+
+    private void showErrorMessage() {
+        // TODO: Implement error message
+    }
+
+    private void startMoviePosterLoader(Bundle bundle) {
+        LoaderManager loaderManager = getSupportLoaderManager();
+        Loader<ArrayList<ParcelableMovieDb>> moviePosterLoader = loaderManager.getLoader(MOVIE_POSTER_LOADER);
+        if (moviePosterLoader == null) {
+            loaderManager.initLoader(MOVIE_POSTER_LOADER, bundle, this);
+        }
+        else {
+            loaderManager.restartLoader(MOVIE_POSTER_LOADER, bundle, this);
+        }
     }
 
     @Override
@@ -169,50 +195,44 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.List
         startActivity(detailIntent);
     }
 
-    public class MovieTask extends AsyncTask<String, Void, ArrayList<ParcelableMovieDb>> {
+    @Override
+    public Loader<ArrayList<ParcelableMovieDb>> onCreateLoader(int id, final Bundle args) {
+        return new AsyncTaskLoader<ArrayList<ParcelableMovieDb>>(this) {
+            @Override
+            protected void onStartLoading() {
+                super.onStartLoading();
+                if (args == null) {
+                    return;
+                }
+                mLoadingIndicator.setVisibility(View.VISIBLE);
+                forceLoad();
+            }
 
-        private Context mContext;
-        private MovieAdapter mMovieAdapter;
-        private RecyclerView mRecyclerView;
-        private MovieAdapter.ListItemClickListener mListener;
-
-        public MovieTask(Context context, MovieAdapter adapter, RecyclerView recyclerView,
-                         MovieAdapter.ListItemClickListener listener) {
-            mContext = context;
-            mRecyclerView = recyclerView;
-            mMovieAdapter = adapter;
-            mListener = listener;
-        }
-
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            mLoadingIndicator.setVisibility(View.VISIBLE);
-        }
-
-        @Override
-        protected ArrayList<ParcelableMovieDb> doInBackground(String... params) {
-            String param = params[0];
-            List<MovieDb> movieList = new ArrayList<>();
-            ArrayList<ParcelableMovieDb> movies = new ArrayList<>();
-            if (param != null && TextUtils.isEmpty(param) == false) {
-                switch (param) {
+            @Override
+            public ArrayList<ParcelableMovieDb> loadInBackground() {
+                String sortOrder = args.getString(SORT_ORDER);
+                if (sortOrder == null || TextUtils.isEmpty(sortOrder)) {
+                    return null;
+                }
+                List<MovieDb> movieList = new ArrayList<>();
+                ArrayList<ParcelableMovieDb> movies = new ArrayList<>();
+                switch (sortOrder) {
                     case TOP_RATED:
                         try {
-                            MovieResultsPage resultPage = mMovieUtils.getTopRated(mContext, 0);
+                            MovieResultsPage resultPage = mMovieUtils.getTopRated(this.getContext(), 0);
                             movieList = resultPage.getResults();
                         } catch (NoInternetConnectionException e) {
-                            String errorText = mContext.getString(R.string.no_internet_warning);
+                            String errorText = this.getContext().getString(R.string.no_internet_warning);
                             Log.w(TAG, errorText);
                             e.printStackTrace();
                         }
                         break;
                     case MOST_POPULAR:
                         try {
-                            MovieResultsPage resultPage = mMovieUtils.getMostPopular(mContext, 0);
+                            MovieResultsPage resultPage = mMovieUtils.getMostPopular(this.getContext(), 0);
                             movieList = resultPage.getResults();
                         } catch (NoInternetConnectionException e) {
-                            String errorText = mContext.getString(R.string.no_internet_warning);
+                            String errorText = this.getContext().getString(R.string.no_internet_warning);
                             Log.w(TAG, errorText);
                             e.printStackTrace();
                         }
@@ -224,29 +244,35 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.List
                         movies.add(new ParcelableMovieDb(movie));
                     }
                 }
-            }
-            return movies;
-        }
 
-        @Override
-        protected void onPostExecute(ArrayList<ParcelableMovieDb> movieDbs) {
-            mLoadingIndicator.setVisibility(View.INVISIBLE);
-            // check internet connectivity and display warning if needed
-            if (NetworkUtils.isOnline(mContext)) {
-                mNoInternetAccessTextView.setVisibility(View.INVISIBLE);
+                return movies;
             }
-            else {
-                mNoInternetAccessTextView.setVisibility(View.VISIBLE);
-            }
-            mMovies = movieDbs;
-            mMovieAdapter = new MovieAdapter(movieDbs, mImageWidth, mImageHeight, mListener);
-            mRecyclerView.setAdapter(mMovieAdapter);
-            mMovieAdapter.notifyDataSetChanged();
-        }
+        };
+    }
 
-        @Override
-        protected void onProgressUpdate(Void... values) {
-            super.onProgressUpdate(values);
+    @Override
+    public void onLoadFinished(Loader<ArrayList<ParcelableMovieDb>> loader, ArrayList<ParcelableMovieDb> data) {
+        mLoadingIndicator.setVisibility(View.INVISIBLE);
+        // check internet connectivity and display warning if needed
+        if (NetworkUtils.isOnline(loader.getContext())) {
+            mNoInternetAccessTextView.setVisibility(View.INVISIBLE);
         }
+        else {
+            mNoInternetAccessTextView.setVisibility(View.VISIBLE);
+        }
+        if (data == null || data.size() == 0) {
+            showErrorMessage();
+        }
+        else {
+            mMovies = data;
+            mAdapter = new MovieAdapter(data, mImageWidth, mImageHeight, this);
+            mMoviesList.setAdapter(mAdapter);
+            mAdapter.notifyDataSetChanged();
+        }
+    }
+
+    @Override
+    public void onLoaderReset(Loader<ArrayList<ParcelableMovieDb>> loader) {
+
     }
 }
