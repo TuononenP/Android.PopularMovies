@@ -45,10 +45,13 @@ public class MainActivity
     private static final String MOVIE_LIST_SAVE_STATE = "saved-movie-list";
     private static final String LIST_INSTANCE_STATE = "list-instance-state";
     private static final String CLICKED_MOVIE_DB_STATE = "clicked_movie_db_state";
+    private static final String LAST_SORT_ORDER_STATE = "last-sort-order-state";
     private static final String TOP_RATED = "top-rated";
     private static final String MOST_POPULAR = "most-popular";
     private static final String SORT_ORDER = "sort-order";
     private static final int MOVIE_POSTER_LOADER = 77;
+
+    private String mLastSortOrderState;
 
     private static int mImageWidth;
     private static int mImageHeight;
@@ -96,6 +99,9 @@ public class MainActivity
                 mListState = savedInstanceState.getParcelable(LIST_INSTANCE_STATE);
                 mMoviesList.getLayoutManager().onRestoreInstanceState(mListState);
             }
+            if (savedInstanceState.containsKey(LAST_SORT_ORDER_STATE)) {
+                mLastSortOrderState = savedInstanceState.getString(LAST_SORT_ORDER_STATE);
+            }
         }
 
         if (mMoviesList.getAdapter() == null) {
@@ -113,12 +119,15 @@ public class MainActivity
         saveInstanceState.putParcelableArrayList(MOVIE_LIST_SAVE_STATE, mMovies);
         mListState = mMoviesList.getLayoutManager().onSaveInstanceState();
         saveInstanceState.putParcelable(LIST_INSTANCE_STATE, mListState);
+        saveInstanceState.putString(LAST_SORT_ORDER_STATE, mLastSortOrderState);
     }
 
     @Override
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
+        mMovies = savedInstanceState.getParcelableArrayList(MOVIE_LIST_SAVE_STATE);
         mListState = savedInstanceState.getParcelable(LIST_INSTANCE_STATE);
+        mLastSortOrderState = savedInstanceState.getString(LAST_SORT_ORDER_STATE);
     }
 
     @Override
@@ -205,7 +214,12 @@ public class MainActivity
                     return;
                 }
                 mLoadingIndicator.setVisibility(View.VISIBLE);
-                forceLoad();
+                if (mMovies != null && mMovies.size() > 0 && mLastSortOrderState == args.getString(SORT_ORDER)) {
+                    deliverResult(mMovies);
+                }
+                else {
+                    forceLoad();
+                }
             }
 
             @Override
@@ -214,6 +228,7 @@ public class MainActivity
                 if (sortOrder == null || TextUtils.isEmpty(sortOrder)) {
                     return null;
                 }
+                mLastSortOrderState = sortOrder;
                 List<MovieDb> movieList = new ArrayList<>();
                 ArrayList<ParcelableMovieDb> movies = new ArrayList<>();
                 switch (sortOrder) {
@@ -244,8 +259,13 @@ public class MainActivity
                         movies.add(new ParcelableMovieDb(movie));
                     }
                 }
-
                 return movies;
+            }
+
+            @Override
+            public void deliverResult(ArrayList<ParcelableMovieDb> data) {
+                mMovies = data;
+                super.deliverResult(data);
             }
         };
     }
