@@ -12,17 +12,21 @@ import com.petrituononen.popularmovies.utilities.PicassoUtils;
 
 import java.util.ArrayList;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
 /**
  * Created by Petri Tuononen on 22.1.2017.
  */
 public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHolder> {
     private static final String TAG = MovieAdapter.class.getSimpleName();
-    private PicassoUtils mPicassoUtils = new PicassoUtils();
-    private int mNumberOfItems;
-    private ArrayList<ParcelableMovieDb> mMovies;
-    private Context mContext;
     private static int mImageWidth;
     private static int mImageHeight;
+    private int mNumberOfItems;
+    private PicassoUtils mPicassoUtils = new PicassoUtils();
+    private ArrayList<ParcelableMovieDb> mMovies;
+
+    private Context mContext;
     final private ListItemClickListener mOnClickListener;
 
     public interface ListItemClickListener {
@@ -70,11 +74,11 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHol
 
     class MovieViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
-        ImageView mMoviePosterImageView;
+        @BindView(R.id.iv_movie_poster_item) ImageView mMoviePosterImageView;
 
         public MovieViewHolder(View itemView) {
             super(itemView);
-            mMoviePosterImageView = (ImageView)itemView.findViewById(R.id.iv_movie_poster_item);
+            ButterKnife.bind(this, itemView);
             itemView.setOnClickListener(this);
         }
 

@@ -11,34 +11,31 @@ import android.widget.TextView;
 import com.petrituononen.popularmovies.data.ParcelableMovieDb;
 import com.petrituononen.popularmovies.utilities.PicassoUtils;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
 /**
  * Created by Petri Tuononen on 24.1.2017.
  * Show details of the movie.
  */
 public class DetailActivity extends AppCompatActivity {
 
+    private static final String TAG = DetailActivity.class.getSimpleName();
     private static final String CLICKED_MOVIE_DB_STATE = "clicked_movie_db_state";
     private ParcelableMovieDb mMovieDb;
-
-    private static final String TAG = DetailActivity.class.getSimpleName();
-    private TextView mOriginalTitleTextView;
-    private TextView mReleaseYearTextView;
-    private TextView mUserRatingTextView;
-    private TextView mPlotSynopsisTextView;
-    private ImageView mMovieThumbnailImageView;
     private PicassoUtils mPicassoUtils = new PicassoUtils();
+
+    @BindView(R.id.original_title_textview) TextView mOriginalTitleTextView;
+    @BindView(R.id.movie_release_year_textview) TextView mReleaseYearTextView;
+    @BindView(R.id.movie_rating_textview) TextView mUserRatingTextView;
+    @BindView(R.id.plot_synopsis_textview) TextView mPlotSynopsisTextView;
+    @BindView(R.id.movie_thumbnail_imageview) ImageView mMovieThumbnailImageView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail);
-
-        mOriginalTitleTextView = (TextView) findViewById(R.id.original_title_textview);
-        mReleaseYearTextView = (TextView) findViewById(R.id.movie_release_year_textview);
-        mUserRatingTextView = (TextView) findViewById(R.id.movie_rating_textview);
-        mPlotSynopsisTextView = (TextView) findViewById(R.id.plot_synopsis_textview);
-        mMovieThumbnailImageView = (ImageView) findViewById(R.id.movie_thumbnail_imageview);
-
+        ButterKnife.bind(this);
         Intent intent = getIntent();
         if (intent.hasExtra(CLICKED_MOVIE_DB_STATE)) {
             mMovieDb = intent.getParcelableExtra(CLICKED_MOVIE_DB_STATE);
@@ -70,5 +67,4 @@ public class DetailActivity extends AppCompatActivity {
         }
         return super.onOptionsItemSelected(item);
     }
-
 }

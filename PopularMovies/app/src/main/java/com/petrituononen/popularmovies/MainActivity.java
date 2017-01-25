@@ -25,6 +25,8 @@ import com.petrituononen.popularmovies.utilities.TheMovieDbUtils;
 import java.util.ArrayList;
 import java.util.List;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import info.movito.themoviedbapi.model.MovieDb;
 import info.movito.themoviedbapi.model.core.MovieResultsPage;
 
@@ -34,31 +36,32 @@ import info.movito.themoviedbapi.model.core.MovieResultsPage;
  */
 public class MainActivity extends AppCompatActivity implements MovieAdapter.ListItemClickListener {
 
+    private static final String TAG = MainActivity.class.getSimpleName();
     private static final String MOVIE_LIST_SAVE_STATE = "saved-movie-list";
     private static final String LIST_INSTANCE_STATE = "list-instance-state";
     private static final String CLICKED_MOVIE_DB_STATE = "clicked_movie_db_state";
-    private MovieAdapter mAdapter;
-    private RecyclerView mMoviesList;
-    private TextView mNoInternetAccessTextView;
-    private GridLayoutManager mLayoutManager;
-    private Parcelable mListState;
-    private static ArrayList<ParcelableMovieDb> mMovies = new ArrayList<>();
-    private TheMovieDbUtils mMovieUtils = new TheMovieDbUtils();
-    private ProgressBar mLoadingIndicator;
     private static final String TOP_RATED = "top-rated";
     private static final String MOST_POPULAR = "most-popular";
-    private static final String TAG = MainActivity.class.getSimpleName();
+
     private static int mImageWidth;
     private static int mImageHeight;
+
+    private MovieAdapter mAdapter;
+    private GridLayoutManager mLayoutManager;
+    private Parcelable mListState;
+
+    private TheMovieDbUtils mMovieUtils = new TheMovieDbUtils();
+    private static ArrayList<ParcelableMovieDb> mMovies = new ArrayList<>();
+
+    @BindView(R.id.rv_movie_posters) RecyclerView mMoviesList;
+    @BindView(R.id.tv_no_internet_access) TextView mNoInternetAccessTextView;
+    @BindView(R.id.pb_loading_indicator) ProgressBar mLoadingIndicator;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        mNoInternetAccessTextView = (TextView) findViewById(R.id.tv_no_internet_access);
-        mMoviesList = (RecyclerView) findViewById(R.id.rv_movie_posters);
-        mLoadingIndicator = (ProgressBar) findViewById(R.id.pb_loading_indicator);
+        ButterKnife.bind(this);
 
         // show text view if there is no internet connectivity
         if (NetworkUtils.isOnline(this) == false) {
