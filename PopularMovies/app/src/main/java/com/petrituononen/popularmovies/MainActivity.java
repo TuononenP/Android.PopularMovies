@@ -88,6 +88,7 @@ public class MainActivity
         mMoviesList.setHasFixedSize(true);
 
         if (savedInstanceState != null) {
+            // restore movie objects
             if (savedInstanceState.containsKey(MOVIE_LIST_SAVE_STATE)) {
                 ArrayList<ParcelableMovieDb> moviesParcelable = savedInstanceState.getParcelableArrayList(MOVIE_LIST_SAVE_STATE);
                 if (moviesParcelable != null && moviesParcelable.size() > 0) {
@@ -95,10 +96,12 @@ public class MainActivity
                     mMoviesList.setAdapter(mAdapter);
                 }
             }
+            // restore list state
             if (savedInstanceState.containsKey(LIST_INSTANCE_STATE)) {
                 mListState = savedInstanceState.getParcelable(LIST_INSTANCE_STATE);
                 mMoviesList.getLayoutManager().onRestoreInstanceState(mListState);
             }
+            // restore sort order
             if (savedInstanceState.containsKey(LAST_SORT_ORDER_STATE)) {
                 mLastSortOrderState = savedInstanceState.getString(LAST_SORT_ORDER_STATE);
             }
@@ -210,10 +213,8 @@ public class MainActivity
             @Override
             protected void onStartLoading() {
                 super.onStartLoading();
-                if (args == null) {
-                    return;
-                }
                 mLoadingIndicator.setVisibility(View.VISIBLE);
+                // load from cache if cache is not empty and sort order is same
                 if (mMovies != null && mMovies.size() > 0 && mLastSortOrderState == args.getString(SORT_ORDER)) {
                     deliverResult(mMovies);
                 }
