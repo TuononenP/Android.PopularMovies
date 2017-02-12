@@ -2,6 +2,7 @@ package com.petrituononen.popularmovies.data;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.util.Log;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
@@ -80,7 +81,7 @@ public class ParcelableMovieDb extends IdElement implements Multi, Parcelable {
             this.lists = (ResultsPage<MovieList>) movieDb.getLists();
         }
         catch (Exception ex) {
-
+            Log.w("ParcelableMovieDb cstr", "Could not cast similar movies, reviews or lists");
         }
     }
 

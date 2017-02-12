@@ -25,7 +25,7 @@ public class NetworkUtils {
      */
     public static String getResponseFromHttpUrl(URL url, Context context)
             throws IOException, NoInternetConnectionException {
-        if (isOnline(context) == false) {
+        if (!isOnline(context)) {
             throw new NoInternetConnectionException();
         }
         HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();

@@ -62,7 +62,7 @@ public class MainActivity
     private GridLayoutManager mLayoutManager;
     private Parcelable mListState;
 
-    private TheMovieDbUtils mMovieUtils = new TheMovieDbUtils();
+    private final TheMovieDbUtils mMovieUtils = new TheMovieDbUtils();
     private static ArrayList<ParcelableMovieDb> mMovies = new ArrayList<>();
 
     @BindView(R.id.rv_movie_posters) RecyclerView mMoviesList;
@@ -76,7 +76,7 @@ public class MainActivity
         ButterKnife.bind(this);
 
         // show text view if there is no internet connectivity
-        if (NetworkUtils.isOnline(this) == false) {
+        if (!NetworkUtils.isOnline(this)) {
             mNoInternetAccessTextView.setVisibility(View.VISIBLE);
         }
 
@@ -92,7 +92,8 @@ public class MainActivity
         if (savedInstanceState != null) {
             // restore movie objects
             if (savedInstanceState.containsKey(MOVIE_LIST_SAVE_STATE)) {
-                ArrayList<ParcelableMovieDb> moviesParcelable = savedInstanceState.getParcelableArrayList(MOVIE_LIST_SAVE_STATE);
+                ArrayList<ParcelableMovieDb> moviesParcelable
+                        = savedInstanceState.getParcelableArrayList(MOVIE_LIST_SAVE_STATE);
                 if (moviesParcelable != null && moviesParcelable.size() > 0) {
                     mAdapter = new MovieAdapter(moviesParcelable, mImageWidth, mImageHeight, this);
                     mMoviesList.setAdapter(mAdapter);
@@ -111,7 +112,8 @@ public class MainActivity
 
         if (mMoviesList.getAdapter() == null) {
             // these two lines avoid No adapter attached; skipping layout error
-            mAdapter = new MovieAdapter(new ArrayList<ParcelableMovieDb>(), mImageWidth, mImageHeight, this);
+            mAdapter = new MovieAdapter(new ArrayList<ParcelableMovieDb>(),
+                    mImageWidth, mImageHeight, this);
             mMoviesList.setAdapter(mAdapter);
 
             showMostPopularMovies();
@@ -151,7 +153,7 @@ public class MainActivity
      * @param context
      * @param columnCount
      */
-    public void setImageWidthAndHeight(Context context, int columnCount) {
+    private void setImageWidthAndHeight(Context context, int columnCount) {
         int displayWidth = BasicUtils.getDisplayWidthInPx(context);
         double scale = 1.5;
         mImageWidth = (int) Math.ceil(displayWidth / columnCount);
@@ -159,7 +161,7 @@ public class MainActivity
     }
 
     private void showErrorMessage() {
-        Toast.makeText(getBaseContext(), "Movies could not be fetched.", Toast.LENGTH_LONG);
+        Toast.makeText(getBaseContext(), "Movies could not be fetched.", Toast.LENGTH_LONG).show();
     }
 
     private void showTopRatedMovies() {
@@ -182,7 +184,8 @@ public class MainActivity
 
     private void startMoviePosterLoader(Bundle bundle) {
         LoaderManager loaderManager = getSupportLoaderManager();
-        Loader<ArrayList<ParcelableMovieDb>> moviePosterLoader = loaderManager.getLoader(MOVIE_POSTER_LOADER);
+        Loader<ArrayList<ParcelableMovieDb>> moviePosterLoader
+                = loaderManager.getLoader(MOVIE_POSTER_LOADER);
         if (moviePosterLoader == null) {
             loaderManager.initLoader(MOVIE_POSTER_LOADER, bundle, this);
         }
@@ -226,7 +229,8 @@ public class MainActivity
                 super.onStartLoading();
                 mLoadingIndicator.setVisibility(View.VISIBLE);
                 // load from cache if cache is not empty and sort order is same
-                if (mMovies != null && mMovies.size() > 0 && mLastSortOrderState == args.getString(SORT_ORDER)) {
+                if (mMovies != null && mMovies.size() > 0
+                        && mLastSortOrderState.equals(args.getString(SORT_ORDER))) {
                     deliverResult(mMovies);
                 }
                 else {
@@ -246,7 +250,8 @@ public class MainActivity
                 switch (sortOrder) {
                     case TOP_RATED:
                         try {
-                            MovieResultsPage resultPage = mMovieUtils.getTopRated(this.getContext(), 0);
+                            MovieResultsPage resultPage =
+                                    mMovieUtils.getTopRated(this.getContext(), 0);
                             movieList = resultPage.getResults();
                         } catch (NoInternetConnectionException e) {
                             logNoInternetConnectionException(e);
@@ -254,7 +259,8 @@ public class MainActivity
                         break;
                     case MOST_POPULAR:
                         try {
-                            MovieResultsPage resultPage = mMovieUtils.getMostPopular(this.getContext(), 0);
+                            MovieResultsPage resultPage =
+                                    mMovieUtils.getMostPopular(this.getContext(), 0);
                             movieList = resultPage.getResults();
                         } catch (NoInternetConnectionException e) {
                             logNoInternetConnectionException(e);
@@ -288,7 +294,8 @@ public class MainActivity
     }
 
     @Override
-    public void onLoadFinished(Loader<ArrayList<ParcelableMovieDb>> loader, ArrayList<ParcelableMovieDb> data) {
+    public void onLoadFinished(Loader<ArrayList<ParcelableMovieDb>> loader,
+                               ArrayList<ParcelableMovieDb> data) {
         mLoadingIndicator.setVisibility(View.INVISIBLE);
         // check internet connectivity and display warning if needed
         if (NetworkUtils.isOnline(loader.getContext())) {

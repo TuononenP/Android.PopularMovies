@@ -13,6 +13,6 @@
         app:showAsAction="ifRoom"/>
     <item
         android:id="@+id/app_bar_list_favorites"
-        android:title="Favorites"
+        android:title="@string/app_bar_favorites"
         app:showAsAction="ifRoom" />
 </menu>

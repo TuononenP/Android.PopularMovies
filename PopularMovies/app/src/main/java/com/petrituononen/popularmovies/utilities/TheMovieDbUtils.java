@@ -22,7 +22,7 @@ public class TheMovieDbUtils {
     }
 
     public TmdbMovies getMovies(Context context) throws NoInternetConnectionException {
-        if (NetworkUtils.isOnline(context) == false) {
+        if (!NetworkUtils.isOnline(context)) {
             throw new NoInternetConnectionException();
         }
         return new TmdbApi(getApiKey(context)).getMovies();

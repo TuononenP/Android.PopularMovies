@@ -32,7 +32,6 @@ public class PicassoUtils {
         String moviePosterPath = movie.getPosterPath();
         String movieBasePath = context.getString(R.string.themoviedb_api_movie_poster_basepath);
         String moviePosterSize = context.getString(R.string.themoviedb_api_movie_poster_size);
-        String moviePosterUrl = movieBasePath + moviePosterSize + moviePosterPath;
-        return moviePosterUrl;
+        return movieBasePath + moviePosterSize + moviePosterPath;
     }
 }

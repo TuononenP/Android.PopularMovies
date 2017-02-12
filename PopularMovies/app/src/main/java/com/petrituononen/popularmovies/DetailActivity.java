@@ -44,7 +44,8 @@ public class DetailActivity extends AppCompatActivity {
                     String releaseYear = mMovieDb.getReleaseDate().substring(0,4);
                     mReleaseYearTextView.setText(releaseYear);
                     mOriginalTitleTextView.setText(mMovieDb.getOriginalTitle());
-                    mUserRatingTextView.setText(String.valueOf(mMovieDb.getVoteAverage()) + "/10");
+                    String rating = String.format("%1$.1f / 10", mMovieDb.getVoteAverage());
+                    mUserRatingTextView.setText(rating);
                     mPlotSynopsisTextView.setText(mMovieDb.getOverview());
 
                     String imageUrl = mPicassoUtils.formMoviePosterUrl(mMovieDb, this);

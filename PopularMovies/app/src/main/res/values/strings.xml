@@ -14,10 +14,12 @@
     <string name="no_internet_warning">No internet connectivity.\nPlease make sure you are connected to internet.</string>
     <string name="app_bar_most_popular">Most popular</string>
     <string name="app_bar_top_rated">Top rated</string>
+    <string name="app_bar_favorites">Favorites</string>
     <string name="details_activity_title">Details</string>
     <string name="details_activity_movie_original_title">Original title</string>
     <string name="details_activity_movie_release_year">Release year</string>
     <string name="details_activity_movie_user_rating">User rating</string>
     <string name="details_activity_movie_plot_synopsis">Plot synopsis</string>
     <string name="details_activity_movie_thumbnail_description">Movie thumbnail</string>
+    <string name="movie_poster_image_description">Movie poster</string>
 </resources>
