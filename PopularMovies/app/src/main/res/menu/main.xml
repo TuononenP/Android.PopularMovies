@@ -11,4 +11,8 @@
         android:id="@+id/app_bar_list_most_popular"
         android:title="@string/app_bar_most_popular"
         app:showAsAction="ifRoom"/>
+    <item
+        android:id="@+id/app_bar_list_favorites"
+        android:title="Favorites"
+        app:showAsAction="ifRoom" />
 </menu>

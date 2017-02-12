@@ -17,6 +17,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.petrituononen.popularmovies.data.ParcelableMovieDb;
 import com.petrituononen.popularmovies.exceptions.NoInternetConnectionException;
@@ -48,6 +49,7 @@ public class MainActivity
     private static final String LAST_SORT_ORDER_STATE = "last-sort-order-state";
     private static final String TOP_RATED = "top-rated";
     private static final String MOST_POPULAR = "most-popular";
+    private static final String FAVORITES = "favorites";
     private static final String SORT_ORDER = "sort-order";
     private static final int MOVIE_POSTER_LOADER = 77;
 
@@ -156,20 +158,26 @@ public class MainActivity
         mImageHeight = (int) Math.ceil(scale * mImageWidth);
     }
 
+    private void showErrorMessage() {
+        Toast.makeText(getBaseContext(), "Movies could not be fetched.", Toast.LENGTH_LONG);
+    }
+
     private void showTopRatedMovies() {
-        Bundle bundle = new Bundle();
-        bundle.putString(SORT_ORDER, TOP_RATED);
-        startMoviePosterLoader(bundle);
+        startMoviePosterLoader(TOP_RATED);
     }
 
     private void showMostPopularMovies() {
-        Bundle bundle = new Bundle();
-        bundle.putString(SORT_ORDER, MOST_POPULAR);
-        startMoviePosterLoader(bundle);
+        startMoviePosterLoader(MOST_POPULAR);
     }
 
-    private void showErrorMessage() {
-        // TODO: Implement error message
+    private void showFavoriteMovies() {
+        startMoviePosterLoader(FAVORITES);
+    }
+
+    private void startMoviePosterLoader(String sortOrder) {
+        Bundle bundle = new Bundle();
+        bundle.putString(SORT_ORDER, sortOrder);
+        startMoviePosterLoader(bundle);
     }
 
     private void startMoviePosterLoader(Bundle bundle) {
@@ -196,7 +204,10 @@ public class MainActivity
             showMostPopularMovies();
         } else if (id == R.id.app_bar_list_top_rated) {
             showTopRatedMovies();
+        } else if (id == R.id.app_bar_list_favorites) {
+            showFavoriteMovies();
         }
+
         return super.onOptionsItemSelected(item);
     }
 
@@ -238,9 +249,7 @@ public class MainActivity
                             MovieResultsPage resultPage = mMovieUtils.getTopRated(this.getContext(), 0);
                             movieList = resultPage.getResults();
                         } catch (NoInternetConnectionException e) {
-                            String errorText = this.getContext().getString(R.string.no_internet_warning);
-                            Log.w(TAG, errorText);
-                            e.printStackTrace();
+                            logNoInternetConnectionException(e);
                         }
                         break;
                     case MOST_POPULAR:
@@ -248,10 +257,11 @@ public class MainActivity
                             MovieResultsPage resultPage = mMovieUtils.getMostPopular(this.getContext(), 0);
                             movieList = resultPage.getResults();
                         } catch (NoInternetConnectionException e) {
-                            String errorText = this.getContext().getString(R.string.no_internet_warning);
-                            Log.w(TAG, errorText);
-                            e.printStackTrace();
+                            logNoInternetConnectionException(e);
                         }
+                        break;
+                    case FAVORITES:
+                        // TODO: Implement favorites menu item action
                         break;
                 }
                 // convert to parcelable
@@ -267,6 +277,12 @@ public class MainActivity
             public void deliverResult(ArrayList<ParcelableMovieDb> data) {
                 mMovies = data;
                 super.deliverResult(data);
+            }
+
+            private void logNoInternetConnectionException(NoInternetConnectionException e) {
+                String errorText = this.getContext().getString(R.string.no_internet_warning);
+                Log.w(TAG, errorText);
+                e.printStackTrace();
             }
         };
     }
