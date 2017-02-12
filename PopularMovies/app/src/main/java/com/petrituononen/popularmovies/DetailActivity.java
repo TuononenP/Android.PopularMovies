@@ -12,8 +12,12 @@ import android.widget.TextView;
 import com.petrituononen.popularmovies.data.ParcelableMovieDb;
 import com.petrituononen.popularmovies.utilities.PicassoUtils;
 
+import java.util.List;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import info.movito.themoviedbapi.model.Reviews;
+import info.movito.themoviedbapi.model.Video;
 
 /**
  * Created by Petri Tuononen on 24.1.2017.
@@ -51,6 +55,12 @@ public class DetailActivity extends AppCompatActivity {
 
                     String imageUrl = mPicassoUtils.formMoviePosterUrl(mMovieDb, this);
                     mPicassoUtils.loadAlbumArtThumbnail(this, mMovieThumbnailImageView, imageUrl);
+
+                    List<Reviews> reviews = mMovieDb.getReviews();
+                    List<Video> videos = mMovieDb.getVideos();
+                    // TODO: show reviews and videos
+
+                    // TODO: Set star icon to on state if movie is favorite
                 }
                 catch (Exception ex) {
                     Log.w(TAG, ex.getMessage());
