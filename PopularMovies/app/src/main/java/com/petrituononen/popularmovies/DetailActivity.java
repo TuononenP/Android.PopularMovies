@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -65,7 +66,16 @@ public class DetailActivity extends AppCompatActivity {
             case android.R.id.home:
                 finish();
                 return true;
-        }
+            case R.id.save_as_favorite_movie:
+                //TODO: Implement saving favorite movie
+                break;
+    }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.details, menu);
+        return true;
     }
 }

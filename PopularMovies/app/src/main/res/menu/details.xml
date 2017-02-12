@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    tools:context=".DetailActivity">
+
+    <item android:title="@string/menu_item_favorite_movie"
+        android:id="@+id/save_as_favorite_movie"
+        android:icon="@android:drawable/btn_star_big_off"
+        app:showAsAction="always" />
+</menu>

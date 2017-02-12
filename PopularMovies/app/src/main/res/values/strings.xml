@@ -22,4 +22,5 @@
     <string name="details_activity_movie_plot_synopsis">Plot synopsis</string>
     <string name="details_activity_movie_thumbnail_description">Movie thumbnail</string>
     <string name="movie_poster_image_description">Movie poster</string>
+    <string name="menu_item_favorite_movie">Favorite</string>
 </resources>
