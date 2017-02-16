@@ -1,5 +1,6 @@
 package com.petrituononen.popularmovies.data;
 
+import android.content.ContentUris;
 import android.net.Uri;
 import android.provider.BaseColumns;
 
@@ -11,12 +12,22 @@ import com.petrituononen.popularmovies.BuildConfig;
 public class MovieContract {
     public static final String CONTENT_AUTHORITY = BuildConfig.APPLICATION_ID;
     public static final Uri BASE_CONTENT_URI = Uri.parse("content://" + CONTENT_AUTHORITY);
-    public static final String PATH_MOVIES = "movies";
+    public static final String PATH_MOVIES = "movie";
+    public static final String PATH_FAVORITES = "favorites";
+    public static final String PATH_TOP_RATED = "top_rated";
+    public static final String PATH_MOST_POPULAR = "most_popular";
 
     public static final class MovieEntry implements BaseColumns {
         public static final Uri CONTENT_URI = BASE_CONTENT_URI.buildUpon()
                 .appendPath(PATH_MOVIES)
                 .build();
+
+        public static final Uri FAVORITES
+                = CONTENT_URI.buildUpon().appendPath(PATH_FAVORITES).build();
+        public static final Uri TOP_RATED
+                = CONTENT_URI.buildUpon().appendPath(PATH_TOP_RATED).build();
+        public static final Uri MOST_POPULAR
+                = CONTENT_URI.buildUpon().appendPath(PATH_MOST_POPULAR).build();
 
         public static final String TABLE_NAME = "movie";
 
@@ -27,5 +38,13 @@ public class MovieContract {
         public static final String COLUMN_SYNOPSIS = "synopsis";
         public static final String COLUMN_RATING = "rating";
         public static final String COLUMN_RELEASE_DATE = "release_date";
+
+        public static Uri buildMovieUriWithId(long id) {
+            return ContentUris.withAppendedId(CONTENT_URI, id);
+        }
+
+        public static String getSqlSelectForFavorites() {
+            return COLUMN_FAVORITE + "=" + 1;
+        }
     }
 }

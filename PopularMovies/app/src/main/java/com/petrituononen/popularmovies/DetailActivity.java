@@ -1,6 +1,9 @@
 package com.petrituononen.popularmovies;
 
+import android.content.ContentValues;
 import android.content.Intent;
+import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -9,6 +12,8 @@ import android.view.MenuItem;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.petrituononen.popularmovies.data.ContentValuesHelper;
+import com.petrituononen.popularmovies.data.MovieContract;
 import com.petrituononen.popularmovies.data.ParcelableMovieDb;
 import com.petrituononen.popularmovies.utilities.PicassoUtils;
 
@@ -29,6 +34,24 @@ public class DetailActivity extends AppCompatActivity {
     private static final String CLICKED_MOVIE_DB_STATE = "clicked_movie_db_state";
     private ParcelableMovieDb mMovieDb;
     private PicassoUtils mPicassoUtils = new PicassoUtils();
+
+    public static final String[] MOVIE_DETAIL_PROJECTION = {
+            MovieContract.MovieEntry.COLUMN_MOVIE_ID,
+            MovieContract.MovieEntry.COLUMN_TITLE,
+            MovieContract.MovieEntry.COLUMN_FAVORITE,
+            MovieContract.MovieEntry.COLUMN_POSTER,
+            MovieContract.MovieEntry.COLUMN_SYNOPSIS,
+            MovieContract.MovieEntry.COLUMN_RATING,
+            MovieContract.MovieEntry.COLUMN_RELEASE_DATE
+    };
+
+    public static final int INDEX_MOVIE_ID = 0;
+    public static final int INDEX_MOVIE_TITLE = 1;
+    public static final int INDEX_MOVIE_FAVORITE = 2;
+    public static final int INDEX_MOVIE_POSTER = 3;
+    public static final int INDEX_MOVIE_SYNOPSIS = 4;
+    public static final int INDEX_MOVIE_RATING = 5;
+    public static final int INDEX_MOVIE_RELEASE_DATE = 6;
 
     @BindView(R.id.original_title_textview) TextView mOriginalTitleTextView;
     @BindView(R.id.movie_release_year_textview) TextView mReleaseYearTextView;
@@ -56,11 +79,30 @@ public class DetailActivity extends AppCompatActivity {
                     String imageUrl = mPicassoUtils.formMoviePosterUrl(mMovieDb, this);
                     mPicassoUtils.loadAlbumArtThumbnail(this, mMovieThumbnailImageView, imageUrl);
 
-                    List<Reviews> reviews = mMovieDb.getReviews();
-                    List<Video> videos = mMovieDb.getVideos();
+//                    List<Reviews> reviews = mMovieDb.getReviews();
+//                    List<Video> videos = mMovieDb.getVideos();
                     // TODO: show reviews and videos
 
                     // TODO: Set star icon to on state if movie is favorite
+//                    int movieId = mMovieDb.getId();
+//                    // find movie from database
+//                    Uri uri = MovieContract.MovieEntry.buildMovieUriWithId(movieId);
+//                    Cursor cursor = getContentResolver().query(uri, MOVIE_DETAIL_PROJECTION, null, null, null);
+//                    if (cursor != null && cursor.moveToFirst()) {
+//                        if (cursor.getInt(INDEX_MOVIE_ID) == movieId) {
+//                            String title = cursor.getString(INDEX_MOVIE_TITLE);
+//                            Boolean isFavorite = cursor.getInt(INDEX_MOVIE_FAVORITE) == 1;
+//                            String poster = cursor.getString(INDEX_MOVIE_POSTER);
+//                            String synopsis = cursor.getString(INDEX_MOVIE_SYNOPSIS);
+//                            float ratingFloat = cursor.getFloat(INDEX_MOVIE_RATING);
+//                            String releaseDate = cursor.getString(INDEX_MOVIE_RELEASE_DATE);
+//                        }
+//                    }
+//                    else {
+//                        // add if does not exists
+//                        getContentResolver().insert(MovieContract.MovieEntry.CONTENT_URI, mMovieDb.GetContentValues(getBaseContext(), true));
+//                    }
+//                    getContentResolver().insert(MovieContract.MovieEntry.CONTENT_URI, mMovieDb.GetContentValues(getBaseContext(), true));
                 }
                 catch (Exception ex) {
                     Log.w(TAG, ex.getMessage());
@@ -78,6 +120,7 @@ public class DetailActivity extends AppCompatActivity {
                 return true;
             case R.id.save_as_favorite_movie:
                 //TODO: Implement saving favorite movie
+
                 break;
     }
         return super.onOptionsItemSelected(item);

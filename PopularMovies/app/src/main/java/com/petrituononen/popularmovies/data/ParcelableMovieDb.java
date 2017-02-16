@@ -1,11 +1,16 @@
 package com.petrituononen.popularmovies.data;
 
+import android.content.ContentValues;
+import android.content.Context;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.util.Log;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.petrituononen.popularmovies.exceptions.NoInternetConnectionException;
+import com.petrituononen.popularmovies.utilities.PicassoUtils;
+import com.petrituononen.popularmovies.utilities.TheMovieDbUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -44,7 +49,10 @@ import info.movito.themoviedbapi.model.people.PersonCrew;
 @JsonTypeInfo(use = JsonTypeInfo.Id.NONE)
 public class ParcelableMovieDb extends IdElement implements Multi, Parcelable {
 
-    public ParcelableMovieDb(MovieDb movieDb) {
+    private TheMovieDbUtils movieDbUtils = new TheMovieDbUtils();
+
+    public ParcelableMovieDb(Context context, MovieDb movieDb) {
+        this.setId(movieDb.getId());
         this.title = movieDb.getTitle();
         this.originalTitle = movieDb.getOriginalTitle();
         this.popularity = movieDb.getPopularity();
@@ -73,16 +81,41 @@ public class ParcelableMovieDb extends IdElement implements Multi, Parcelable {
         this.images = (MovieImages) movieDb.getImages();
         this.keywords = (MovieKeywords) movieDb.getKeywords();
         this.releases = (TmdbMovies.ReleaseInfoResults) movieDb.getReleases();
-        this.videos = (Video.Results) movieDb.getVideos();
+//        this.videos = (Video.Results) movieDb.getVideos();
+        try {
+            this.videos = movieDbUtils.getVideos(context, this.getId());
+            this.reviews = movieDbUtils.getReviews(context, this.getId(), 0);
+        } catch (NoInternetConnectionException e) {
+            e.printStackTrace();
+        }
         this.translations = (MovieTranslations) movieDb.getTranslations();
         try {
             this.similarMovies = (ResultsPage<MovieDb>) movieDb.getSimilarMovies();
-            this.reviews = (ResultsPage<Reviews>) movieDb.getReviews();
             this.lists = (ResultsPage<MovieList>) movieDb.getLists();
         }
         catch (Exception ex) {
-            Log.w("ParcelableMovieDb cstr", "Could not cast similar movies, reviews or lists");
+            Log.w("ParcelableMovieDb cstr", "Could not cast similar movies or lists");
         }
+    }
+
+    public ContentValues GetContentValues(Context context, boolean isFavorite) {
+        if (this == null) {
+            return null;
+        }
+        ContentValues values = new ContentValues();
+
+        PicassoUtils picassoUtils = new PicassoUtils();
+        String posterPath = picassoUtils.formMoviePosterUrl(this, context);
+
+        values.put(MovieContract.MovieEntry.COLUMN_MOVIE_ID, this.getId());
+        values.put(MovieContract.MovieEntry.COLUMN_TITLE, this.getTitle());
+        values.put(MovieContract.MovieEntry.COLUMN_FAVORITE, isFavorite);
+        values.put(MovieContract.MovieEntry.COLUMN_POSTER, posterPath);
+        values.put(MovieContract.MovieEntry.COLUMN_SYNOPSIS, this.getOverview());
+        values.put(MovieContract.MovieEntry.COLUMN_RATING, this.getVoteAverage());
+        values.put(MovieContract.MovieEntry.COLUMN_RELEASE_DATE, this.getReleaseDate());
+
+        return values;
     }
 
     @JsonProperty("title")
@@ -163,7 +196,7 @@ public class ParcelableMovieDb extends IdElement implements Multi, Parcelable {
     private TmdbMovies.ReleaseInfoResults releases;
 
     @JsonProperty("videos")
-    private Video.Results videos;
+    private List<Video> videos;
 
     @JsonProperty("translations")
     private MovieTranslations translations;
@@ -172,7 +205,7 @@ public class ParcelableMovieDb extends IdElement implements Multi, Parcelable {
     private ResultsPage<info.movito.themoviedbapi.model.MovieDb> similarMovies;
 
     @JsonProperty("reviews")
-    private ResultsPage<Reviews> reviews;
+    private List<Reviews> reviews;
 
     @JsonProperty("lists")
     private ResultsPage<MovieList> lists;
@@ -319,7 +352,7 @@ public class ParcelableMovieDb extends IdElement implements Multi, Parcelable {
 
 
     public List<Video> getVideos() {
-        return videos != null ? videos.getVideos() : null;
+        return videos != null ? videos : null;
     }
 
 
@@ -339,7 +372,7 @@ public class ParcelableMovieDb extends IdElement implements Multi, Parcelable {
 
 
     public List<Reviews> getReviews() {
-        return reviews != null ? reviews.getResults() : null;
+        return reviews != null ? reviews : null;
     }
 
 
@@ -371,6 +404,7 @@ public class ParcelableMovieDb extends IdElement implements Multi, Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
+        dest.writeInt(this.getId());
         dest.writeString(this.title);
         dest.writeString(this.originalTitle);
         dest.writeFloat(this.popularity);
@@ -399,10 +433,10 @@ public class ParcelableMovieDb extends IdElement implements Multi, Parcelable {
         dest.writeSerializable(this.images);
         dest.writeSerializable(this.keywords);
         dest.writeSerializable(this.releases);
-        dest.writeSerializable(this.videos);
+        dest.writeList(this.videos);
         dest.writeSerializable(this.translations);
         dest.writeSerializable(this.similarMovies);
-        dest.writeSerializable(this.reviews);
+        dest.writeList(this.reviews);
         dest.writeSerializable(this.lists);
     }
 
@@ -410,6 +444,7 @@ public class ParcelableMovieDb extends IdElement implements Multi, Parcelable {
     }
 
     protected ParcelableMovieDb(Parcel in) {
+        this.setId(in.readInt());
         this.title = in.readString();
         this.originalTitle = in.readString();
         this.popularity = in.readFloat();
@@ -442,10 +477,12 @@ public class ParcelableMovieDb extends IdElement implements Multi, Parcelable {
         this.images = (MovieImages) in.readSerializable();
         this.keywords = (MovieKeywords) in.readSerializable();
         this.releases = (TmdbMovies.ReleaseInfoResults) in.readSerializable();
-        this.videos = (Video.Results) in.readSerializable();
+        this.videos = new ArrayList<>();
+        in.readList(this.videos, Video.class.getClassLoader());
         this.translations = (MovieTranslations) in.readSerializable();
         this.similarMovies = (ResultsPage<MovieDb>) in.readSerializable();
-        this.reviews = (ResultsPage<Reviews>) in.readSerializable();
+        this.reviews = new ArrayList<>();
+        in.readList(this.reviews, Reviews.class.getClassLoader());
         this.lists = (ResultsPage<MovieList>) in.readSerializable();
     }
 

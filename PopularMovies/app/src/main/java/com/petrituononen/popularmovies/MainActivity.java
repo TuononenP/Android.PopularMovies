@@ -2,6 +2,7 @@ package com.petrituononen.popularmovies;
 
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.v4.app.LoaderManager;
@@ -19,6 +20,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.petrituononen.popularmovies.data.MovieContract;
 import com.petrituononen.popularmovies.data.ParcelableMovieDb;
 import com.petrituononen.popularmovies.exceptions.NoInternetConnectionException;
 import com.petrituononen.popularmovies.utilities.BasicUtils;
@@ -232,6 +234,7 @@ public class MainActivity
                 if (mMovies != null && mMovies.size() > 0
                         && mLastSortOrderState.equals(args.getString(SORT_ORDER))) {
                     deliverResult(mMovies);
+                    mLoadingIndicator.setVisibility(View.INVISIBLE);
                 }
                 else {
                     forceLoad();
@@ -268,12 +271,18 @@ public class MainActivity
                         break;
                     case FAVORITES:
                         // TODO: Implement favorites menu item action
+//                        Cursor weatherCursor = getContentResolver().query(
+//                                MovieContract.MovieEntry.CONTENT_URI,
+//                                null,
+//                                null,
+//                                null,
+//                                MovieContract.MovieEntry.COLUMN_TITLE + " ASC");
                         break;
                 }
                 // convert to parcelable
                 if (movieList != null && movieList.size() > 0) {
                     for (MovieDb movie : movieList) {
-                        movies.add(new ParcelableMovieDb(movie));
+                        movies.add(new ParcelableMovieDb(getBaseContext(), movie));
                     }
                 }
                 return movies;

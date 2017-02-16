@@ -1,9 +1,11 @@
 package com.petrituononen.popularmovies.data;
 
 import android.content.ContentProvider;
+import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.UriMatcher;
 import android.database.Cursor;
+import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.support.annotation.NonNull;
@@ -15,6 +17,9 @@ public class MovieProvider extends ContentProvider {
 
     public static final int CODE_MOVIE = 100;
     public static final int CODE_MOVIE_WITH_ID = 101;
+    public static final int CODE_FAVORITE_MOVIES = 102;
+    public static final int CODE_TOP_RATED_MOVIES = 103;
+    public static final int CODE_MOST_POPULAR_MOVIES = 104;
 
     private static final UriMatcher sUriMatcher = buildUriMatcher();
     private MovieDbHelper mDbHelper;
@@ -24,6 +29,10 @@ public class MovieProvider extends ContentProvider {
         final String authority = MovieContract.CONTENT_AUTHORITY;
 
         matcher.addURI(authority, MovieContract.PATH_MOVIES, CODE_MOVIE);
+        matcher.addURI(authority, MovieContract.PATH_MOVIES + "/#", CODE_MOVIE_WITH_ID);
+        matcher.addURI(authority, MovieContract.PATH_MOVIES + "/" + MovieContract.PATH_FAVORITES, CODE_FAVORITE_MOVIES);
+        matcher.addURI(authority, MovieContract.PATH_MOVIES + "/" + MovieContract.PATH_TOP_RATED, CODE_TOP_RATED_MOVIES);
+        matcher.addURI(authority, MovieContract.PATH_MOVIES + "/" + MovieContract.PATH_MOST_POPULAR, CODE_MOST_POPULAR_MOVIES);
 
         return matcher;
     }
@@ -45,8 +54,11 @@ public class MovieProvider extends ContentProvider {
                 int rowsInserted = 0;
                 try {
                     for (ContentValues value : values) {
-                        long _id = db.insert(MovieContract.MovieEntry.TABLE_NAME, null, value);
-                        if (_id != -1) {
+                        long id = db.insert(MovieContract.MovieEntry.TABLE_NAME, null, value);
+                        if (id == -1) {
+                            throw new SQLException("Failed to insert row into " + uri);
+                        }
+                        else {
                             rowsInserted++;
                         }
                     }
@@ -83,12 +95,45 @@ public class MovieProvider extends ContentProvider {
                 break;
             case CODE_MOVIE_WITH_ID:
                 String movieId = uri.getLastPathSegment();
-                String[] selectionArguments = new String[]{movieId};
+                String[] selectMovieWithId = new String[]{movieId};
                 cursor = mDbHelper.getReadableDatabase().query(
                         MovieContract.MovieEntry.TABLE_NAME,
                         projection,
                         MovieContract.MovieEntry.COLUMN_MOVIE_ID + " = ? ",
-                        selectionArguments,
+                        selectMovieWithId,
+                        null,
+                        null,
+                        sortOrder);
+                break;
+            case CODE_TOP_RATED_MOVIES:
+                // TODO: Finish
+                cursor = mDbHelper.getReadableDatabase().query(
+                        MovieContract.MovieEntry.TABLE_NAME,
+                        projection,
+                        selection,
+                        selectionArgs,
+                        null,
+                        null,
+                        sortOrder);
+                break;
+            case CODE_MOST_POPULAR_MOVIES:
+                // TODO: Finish
+                cursor = mDbHelper.getReadableDatabase().query(
+                        MovieContract.MovieEntry.TABLE_NAME,
+                        projection,
+                        selection,
+                        selectionArgs,
+                        null,
+                        null,
+                        sortOrder);
+                break;
+            case CODE_FAVORITE_MOVIES:
+                String sqlSelectFavorites = MovieContract.MovieEntry.getSqlSelectForFavorites();
+                cursor = mDbHelper.getReadableDatabase().query(
+                        MovieContract.MovieEntry.TABLE_NAME,
+                        projection,
+                        sqlSelectFavorites,
+                        selectionArgs,
                         null,
                         null,
                         sortOrder);
@@ -96,7 +141,6 @@ public class MovieProvider extends ContentProvider {
             default:
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
         }
-
         cursor.setNotificationUri(getContext().getContentResolver(), uri);
         return cursor;
     }
@@ -108,7 +152,29 @@ public class MovieProvider extends ContentProvider {
 
     @Override
     public Uri insert(@NonNull Uri uri, ContentValues values) {
-        return null;
+        final SQLiteDatabase db = mDbHelper.getWritableDatabase();
+
+        switch (sUriMatcher.match(uri)) {
+            case CODE_MOVIE:
+            case CODE_MOVIE_WITH_ID:
+                Uri newUri = null;
+                db.beginTransaction();
+                try {
+                        long id = db.insertOrThrow(MovieContract.MovieEntry.TABLE_NAME, null, values);
+                        if (id == -1) {
+                            throw new SQLException("Failed to insert row into " + uri);
+                        }
+                        newUri = MovieContract.MovieEntry.buildMovieUriWithId(id);
+                        getContext().getContentResolver().notifyChange(newUri, null);
+                        db.setTransactionSuccessful();
+
+                } finally {
+                    db.endTransaction();
+                }
+                return newUri;
+            default:
+                return null;
+        }
     }
 
     @Override
@@ -124,9 +190,7 @@ public class MovieProvider extends ContentProvider {
                         MovieContract.MovieEntry.TABLE_NAME,
                         selection,
                         selectionArgs);
-
                 break;
-
             default:
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
         }
