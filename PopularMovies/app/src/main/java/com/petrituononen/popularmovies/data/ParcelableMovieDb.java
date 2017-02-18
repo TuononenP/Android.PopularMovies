@@ -8,6 +8,7 @@ import android.util.Log;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.petrituononen.popularmovies.exceptions.ApiKeyNotFoundException;
 import com.petrituononen.popularmovies.exceptions.NoInternetConnectionException;
 import com.petrituononen.popularmovies.utilities.PicassoUtils;
 import com.petrituononen.popularmovies.utilities.TheMovieDbUtils;
@@ -86,6 +87,8 @@ public class ParcelableMovieDb extends IdElement implements Multi, Parcelable {
             this.videos = movieDbUtils.getVideos(context, this.getId());
             this.reviews = movieDbUtils.getReviews(context, this.getId(), 0);
         } catch (NoInternetConnectionException e) {
+            e.printStackTrace();
+        } catch (ApiKeyNotFoundException e) {
             e.printStackTrace();
         }
         this.translations = (MovieTranslations) movieDb.getTranslations();
