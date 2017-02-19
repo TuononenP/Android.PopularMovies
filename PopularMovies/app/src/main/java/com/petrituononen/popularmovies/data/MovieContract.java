@@ -38,6 +38,7 @@ public class MovieContract {
         public static final String COLUMN_SYNOPSIS = "synopsis";
         public static final String COLUMN_RATING = "rating";
         public static final String COLUMN_RELEASE_DATE = "release_date";
+        public static final String COLUMN_POPULARITY = "popularity";
 
         public static Uri buildMovieUriWithId(long id) {
             return ContentUris.withAppendedId(CONTENT_URI, id);
@@ -46,5 +47,7 @@ public class MovieContract {
         public static String getSqlSelectForFavorites() {
             return COLUMN_FAVORITE + "=" + 1;
         }
+
+        public static String getSqlOrderByPopularityDescending() { return COLUMN_POPULARITY + " DESC";}
     }
 }

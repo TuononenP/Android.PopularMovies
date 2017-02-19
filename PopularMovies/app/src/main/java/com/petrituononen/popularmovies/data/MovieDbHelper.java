@@ -11,7 +11,7 @@ import com.petrituononen.popularmovies.data.MovieContract.MovieEntry;
 public class MovieDbHelper extends SQLiteOpenHelper {
 
     public static final String DATABASE_NAME = "movie.db";
-    private static final int DATABASE_VERSION = 3;
+    private static final int DATABASE_VERSION = 4;
 
     public MovieDbHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -25,11 +25,12 @@ public class MovieDbHelper extends SQLiteOpenHelper {
                         MovieEntry._ID               + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
                         MovieEntry.COLUMN_MOVIE_ID       + " INTEGER NOT NULL, "                 +
                         MovieEntry.COLUMN_TITLE + " STRING NOT NULL,"                  +
-                        MovieEntry.COLUMN_FAVORITE   + " INTEGER DEFAULT 0, "                    +
+                        MovieEntry.COLUMN_FAVORITE   + " INTEGER NOT NULL DEFAULT 0, "                    +
                         MovieEntry.COLUMN_POSTER   + " STRING NOT NULL, "                    +
                         MovieEntry.COLUMN_SYNOPSIS   + " STRING NOT NULL, "                    +
                         MovieEntry.COLUMN_RATING   + " REAL NOT NULL, "                    +
                         MovieEntry.COLUMN_RELEASE_DATE + " STRING NOT NULL, "                    +
+                        MovieEntry.COLUMN_POPULARITY + " REAL NOT NULL, "                    +
 
                         " UNIQUE (" + MovieEntry.COLUMN_MOVIE_ID + ") ON CONFLICT REPLACE);";
 
