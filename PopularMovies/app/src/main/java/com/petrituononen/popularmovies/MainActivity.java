@@ -22,6 +22,7 @@ import android.widget.Toast;
 
 import com.petrituononen.popularmovies.data.MovieContract;
 import com.petrituononen.popularmovies.data.ParcelableMovieDb;
+import com.petrituononen.popularmovies.exceptions.ApiKeyNotFoundException;
 import com.petrituononen.popularmovies.exceptions.NoInternetConnectionException;
 import com.petrituononen.popularmovies.utilities.BasicUtils;
 import com.petrituononen.popularmovies.utilities.NetworkUtils;
@@ -70,6 +71,7 @@ public class MainActivity
     @BindView(R.id.rv_movie_posters) RecyclerView mMoviesList;
     @BindView(R.id.tv_no_internet_access) TextView mNoInternetAccessTextView;
     @BindView(R.id.pb_loading_indicator) ProgressBar mLoadingIndicator;
+    @BindView(R.id.tv_api_key_not_found) TextView mApiKeyNotFoundTextView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -80,6 +82,9 @@ public class MainActivity
         // show text view if there is no internet connectivity
         if (!NetworkUtils.isOnline(this)) {
             mNoInternetAccessTextView.setVisibility(View.VISIBLE);
+        }
+        else {
+            mNoInternetAccessTextView.setVisibility(View.INVISIBLE);
         }
 
         // calculate responsive column count and image width and height
@@ -258,6 +263,9 @@ public class MainActivity
                             movieList = resultPage.getResults();
                         } catch (NoInternetConnectionException e) {
                             logNoInternetConnectionException(e);
+                        } catch (ApiKeyNotFoundException e) {
+                            e.printStackTrace();
+                            mApiKeyNotFoundTextView.setVisibility(View.VISIBLE);
                         }
                         break;
                     case MOST_POPULAR:
@@ -267,6 +275,9 @@ public class MainActivity
                             movieList = resultPage.getResults();
                         } catch (NoInternetConnectionException e) {
                             logNoInternetConnectionException(e);
+                        } catch (ApiKeyNotFoundException e) {
+                            e.printStackTrace();
+                            mApiKeyNotFoundTextView.setVisibility(View.VISIBLE);
                         }
                         break;
                     case FAVORITES:

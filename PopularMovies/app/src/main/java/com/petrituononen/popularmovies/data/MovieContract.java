@@ -55,5 +55,7 @@ public class MovieContract {
         public static String getSortOrderTopRated() {
             return COLUMN_RATING + " DESC";
         }
+
+        public static String getSqlOrderByPopularityDescending() { return COLUMN_POPULARITY + " DESC";}
     }
 }

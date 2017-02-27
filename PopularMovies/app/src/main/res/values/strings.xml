@@ -24,4 +24,5 @@
     <string name="movie_poster_image_description">Movie poster</string>
     <string name="menu_item_favorite_movie">Favorite</string>
     <string name="content_authority">com.petrituononen.popularmovies</string>
+    <string name="api_key_not_found_warning">themoviedb.org api key was not found</string>
 </resources>

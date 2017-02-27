@@ -9,7 +9,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.ArrayAdapter;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import com.petrituononen.popularmovies.data.ContentValuesHelper;
@@ -17,6 +19,7 @@ import com.petrituononen.popularmovies.data.MovieContract;
 import com.petrituononen.popularmovies.data.ParcelableMovieDb;
 import com.petrituononen.popularmovies.utilities.PicassoUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
@@ -58,6 +61,7 @@ public class DetailActivity extends AppCompatActivity {
     @BindView(R.id.movie_rating_textview) TextView mUserRatingTextView;
     @BindView(R.id.plot_synopsis_textview) TextView mPlotSynopsisTextView;
     @BindView(R.id.movie_thumbnail_imageview) ImageView mMovieThumbnailImageView;
+    @BindView(R.id.lw_reviews) ListView mReviewsListView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,9 +83,20 @@ public class DetailActivity extends AppCompatActivity {
                     String imageUrl = mPicassoUtils.formMoviePosterUrl(mMovieDb, this);
                     mPicassoUtils.loadAlbumArtThumbnail(this, mMovieThumbnailImageView, imageUrl);
 
-//                    List<Reviews> reviews = mMovieDb.getReviews();
-//                    List<Video> videos = mMovieDb.getVideos();
+                    List<Reviews> reviews = mMovieDb.getReviews();
+
                     // TODO: show reviews and videos
+                    List<String> reviewList = new ArrayList<>();
+                    for(Reviews review : reviews) {
+                        reviewList.add(review.getContent());
+                    }
+                    String[] reviewArray = reviewList.toArray(new String[reviews.size()]);
+                    ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
+                            android.R.layout.simple_list_item_1, android.R.id.text1, reviewArray);
+
+                    mReviewsListView.setAdapter(adapter);
+
+                    //List<Video> videos = mMovieDb.getVideos();
 
                     // TODO: Set star icon to on state if movie is favorite
 //                    int movieId = mMovieDb.getId();

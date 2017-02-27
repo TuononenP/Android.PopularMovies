@@ -2,12 +2,14 @@ package com.petrituononen.popularmovies.data;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.database.Cursor;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.util.Log;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.petrituononen.popularmovies.exceptions.ApiKeyNotFoundException;
 import com.petrituononen.popularmovies.exceptions.NoInternetConnectionException;
 import com.petrituononen.popularmovies.utilities.PicassoUtils;
 import com.petrituononen.popularmovies.utilities.TheMovieDbUtils;
@@ -51,6 +53,26 @@ public class ParcelableMovieDb extends IdElement implements Multi, Parcelable {
 
     private TheMovieDbUtils movieDbUtils = new TheMovieDbUtils();
 
+    public ParcelableMovieDb(Context context, Cursor cursor) {
+        this.setId(cursor.getInt(cursor.getColumnIndex(MovieContract.MovieEntry.COLUMN_MOVIE_ID)));
+        this.title = cursor.getString(cursor.getColumnIndex(MovieContract.MovieEntry.COLUMN_TITLE));
+        this.isFavorite = cursor.getInt(cursor.getColumnIndex(MovieContract.MovieEntry.COLUMN_FAVORITE)) > 0;
+        this.posterPath = cursor.getString(cursor.getColumnIndex(MovieContract.MovieEntry.COLUMN_TITLE));
+        this.overview = cursor.getString(cursor.getColumnIndex(MovieContract.MovieEntry.COLUMN_SYNOPSIS));
+        this.userRating = cursor.getFloat(cursor.getColumnIndex(MovieContract.MovieEntry.COLUMN_RATING));
+        this.releaseDate = cursor.getString(cursor.getColumnIndex(MovieContract.MovieEntry.COLUMN_RELEASE_DATE));
+        this.popularity = cursor.getFloat(cursor.getColumnIndex(MovieContract.MovieEntry.COLUMN_POPULARITY));
+
+        try {
+            this.videos = movieDbUtils.getVideos(context, this.getId());
+            this.reviews = movieDbUtils.getReviews(context, this.getId(), 0);
+        } catch (NoInternetConnectionException e) {
+            e.printStackTrace();
+        } catch (ApiKeyNotFoundException e) {
+            e.printStackTrace();
+        }
+    }
+
     public ParcelableMovieDb(Context context, MovieDb movieDb) {
         this.setId(movieDb.getId());
         this.title = movieDb.getTitle();
@@ -87,6 +109,8 @@ public class ParcelableMovieDb extends IdElement implements Multi, Parcelable {
             this.reviews = movieDbUtils.getReviews(context, this.getId(), 0);
         } catch (NoInternetConnectionException e) {
             e.printStackTrace();
+        } catch (ApiKeyNotFoundException e) {
+            e.printStackTrace();
         }
         this.translations = (MovieTranslations) movieDb.getTranslations();
         try {
@@ -114,6 +138,7 @@ public class ParcelableMovieDb extends IdElement implements Multi, Parcelable {
         values.put(MovieContract.MovieEntry.COLUMN_SYNOPSIS, this.getOverview());
         values.put(MovieContract.MovieEntry.COLUMN_RATING, this.getVoteAverage());
         values.put(MovieContract.MovieEntry.COLUMN_RELEASE_DATE, this.getReleaseDate());
+        values.put(MovieContract.MovieEntry.COLUMN_POPULARITY, this.popularity);
 
         return values;
     }
@@ -210,6 +235,8 @@ public class ParcelableMovieDb extends IdElement implements Multi, Parcelable {
     @JsonProperty("lists")
     private ResultsPage<MovieList> lists;
 
+    @JsonProperty("isFavorite")
+    private boolean isFavorite;
 
     public String getBackdropPath() {
         return backdropPath;
@@ -385,6 +412,9 @@ public class ParcelableMovieDb extends IdElement implements Multi, Parcelable {
         return userRating;
     }
 
+    public boolean getIsFavorite() {
+        return isFavorite;
+    }
 
     @Override
     public String toString() {
@@ -438,6 +468,7 @@ public class ParcelableMovieDb extends IdElement implements Multi, Parcelable {
         dest.writeSerializable(this.similarMovies);
         dest.writeList(this.reviews);
         dest.writeSerializable(this.lists);
+        dest.writeByte(this.isFavorite ? (byte) 1 : (byte) 0);
     }
 
     public ParcelableMovieDb() {
@@ -484,6 +515,7 @@ public class ParcelableMovieDb extends IdElement implements Multi, Parcelable {
         this.reviews = new ArrayList<>();
         in.readList(this.reviews, Reviews.class.getClassLoader());
         this.lists = (ResultsPage<MovieList>) in.readSerializable();
+        this.isFavorite = in.readByte() != 0;
     }
 
     public static final Parcelable.Creator<ParcelableMovieDb> CREATOR = new Parcelable.Creator<ParcelableMovieDb>() {
