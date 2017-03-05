@@ -62,6 +62,8 @@ public class DetailActivity extends AppCompatActivity {
     @BindView(R.id.lw_videos) ListView mVideosListView;
     @BindView(R.id.tv_videos_title) TextView mVideoTitleTextView;
     @BindView(R.id.tv_review_title) TextView mReviewsTitleTextView;
+    @BindView(R.id.tv_videos_not_found) TextView mVideosNotFoundTextView;
+    @BindView(R.id.tv_reviews_not_found) TextView mReviewsNotFoundTextView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -83,33 +85,9 @@ public class DetailActivity extends AppCompatActivity {
                     String imageUrl = mPicassoUtils.formMoviePosterUrl(mMovieDb, this);
                     mPicassoUtils.loadAlbumArtThumbnail(this, mMovieThumbnailImageView, imageUrl);
 
-                    List<Reviews> reviews = mMovieDb.getReviews();
+                    showReviews();
 
-                    // TODO: show reviews and videos
-                    List<String> reviewList = new ArrayList<>();
-                    for(Reviews review : reviews) {
-                        reviewList.add(review.getContent());
-                    }
-
-                    String[] reviewArray = reviewList.toArray(new String[reviews.size()]);
-                    ReviewsAdapter reviewsAdapter = new ReviewsAdapter(reviewArray);
-                    mReviewsListView.setAdapter(reviewsAdapter);
-
-                    List<Video> videos = mMovieDb.getVideos();
-                    List<VideoListModel> videoModels = new ArrayList<>();
-                    for(Video video : videos) {
-                        if (video.getSite().toLowerCase().equals("youtube") && video.getType().toLowerCase().equals("trailer")) {
-                            VideoListModel model = new VideoListModel(video.getName(), formYoutubeUrl(video.getKey()));
-                            videoModels.add(model);
-                        }
-                    }
-
-                    VideoListAdapter videosAdapter = new VideoListAdapter(this, videoModels);
-                    mVideosListView.setAdapter(videosAdapter);
-
-                    if (videos.size() == 0) {
-                        mVideoTitleTextView.setVisibility(View.INVISIBLE);
-                    }
+                    showVideos();
 
                     // TODO: Set star icon to on state if movie is favorite
 //                    int movieId = mMovieDb.getId();
@@ -136,6 +114,41 @@ public class DetailActivity extends AppCompatActivity {
                     Log.w(TAG, ex.getMessage());
                 }
             }
+        }
+    }
+
+    private void showReviews() {
+        List<Reviews> reviews = mMovieDb.getReviews();
+
+        ReviewsAdapter reviewsAdapter = new ReviewsAdapter(reviews);
+        mReviewsListView.setAdapter(reviewsAdapter);
+
+        if (reviews.size() == 0) {
+            mReviewsNotFoundTextView.setVisibility(View.VISIBLE);
+        }
+        else {
+            mReviewsNotFoundTextView.setVisibility(View.GONE);
+        }
+    }
+
+    private void showVideos() {
+        List<Video> videos = mMovieDb.getVideos();
+        List<VideoListModel> videoModels = new ArrayList<>();
+        for(Video video : videos) {
+            if (video.getSite().toLowerCase().equals("youtube") && video.getType().toLowerCase().equals("trailer")) {
+                VideoListModel model = new VideoListModel(video.getName(), formYoutubeUrl(video.getKey()));
+                videoModels.add(model);
+            }
+        }
+
+        VideoListAdapter videosAdapter = new VideoListAdapter(this, videoModels);
+        mVideosListView.setAdapter(videosAdapter);
+
+        if (videos.size() == 0) {
+            mVideosNotFoundTextView.setVisibility(View.VISIBLE);
+        }
+        else {
+            mVideosNotFoundTextView.setVisibility(View.GONE);
         }
     }
 

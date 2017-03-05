@@ -73,28 +73,47 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical">
+
         <TextView
             android:id="@+id/tv_videos_title"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
             android:text="@string/videos_title"
-            android:textSize="16sp"/>
+            android:textSize="16sp" />
+
+        <TextView
+            android:id="@+id/tv_videos_not_found"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/videos_not_found"
+            android:textSize="13sp"
+            android:visibility="gone" />
+
         <ListView
             android:id="@+id/lw_videos"
-            android:layout_height="52dp"
-            android:layout_width="match_parent">
-        </ListView>
+            android:layout_width="wrap_content"
+            android:layout_height="52dp"></ListView>
+
         <TextView
             android:id="@+id/tv_review_title"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
             android:text="@string/reviews_title"
-            android:textSize="16sp"/>
+            android:textSize="16sp" />
+
+        <TextView
+            android:id="@+id/tv_reviews_not_found"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/reviews_not_found"
+            android:textSize="13sp"
+            android:visibility="gone" />
 
         <ListView
             android:id="@+id/lw_reviews"
-            android:layout_width="match_parent"
-            android:layout_height="200dp"></ListView>
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"></ListView>
+
     </LinearLayout>
 
 </LinearLayout>

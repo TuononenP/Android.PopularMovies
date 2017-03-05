@@ -28,4 +28,7 @@
     <string name="reviews_title">Reviews</string>
     <string name="videos_title">Trailers</string>
     <string name="video_title">Video Title</string>
+    <string name="videos_not_found">Trailers not found</string>
+    <string name="reviews_not_found">Reviews not found</string>
+    <string name="review_by">Review by</string>
 </resources>
