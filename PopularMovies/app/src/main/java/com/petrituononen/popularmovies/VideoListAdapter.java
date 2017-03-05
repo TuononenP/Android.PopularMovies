@@ -36,11 +36,10 @@ public class VideoListAdapter extends BaseAdapter {
 
     public View getView(final int position, View convertView, ViewGroup parent) {
         ViewHolder holder = null;
-
-        LayoutInflater mInflater = (LayoutInflater)
-                mContext.getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
+        Context context = parent.getContext();
+        LayoutInflater inflater = LayoutInflater.from(context);
         if (convertView == null) {
-            convertView = mInflater.inflate(R.layout.video_list_item, null);
+            convertView = inflater.inflate(R.layout.video_list_item, null);
             holder = new ViewHolder();
             holder.tvTitle = (TextView) convertView.findViewById(R.id.tv_video_title);
             holder.tvUrl = (TextView) convertView.findViewById(R.id.tv_youtube_uri);

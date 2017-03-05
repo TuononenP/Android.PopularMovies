@@ -7,7 +7,6 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -91,15 +90,10 @@ public class DetailActivity extends AppCompatActivity {
                     for(Reviews review : reviews) {
                         reviewList.add(review.getContent());
                     }
+
                     String[] reviewArray = reviewList.toArray(new String[reviews.size()]);
-
-                    ArrayAdapter<String> reviewsAdapter = new ArrayAdapter<String>(this,
-                            android.R.layout.simple_list_item_1, android.R.id.text1, reviewArray);
+                    ReviewsAdapter reviewsAdapter = new ReviewsAdapter(reviewArray);
                     mReviewsListView.setAdapter(reviewsAdapter);
-
-                    if (reviewList.size() == 0) {
-                        mReviewsTitleTextView.setVisibility(View.INVISIBLE);
-                    }
 
                     List<Video> videos = mMovieDb.getVideos();
                     List<VideoListModel> videoModels = new ArrayList<>();
