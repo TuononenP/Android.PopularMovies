@@ -48,6 +48,14 @@ public class MovieContract {
             return COLUMN_FAVORITE + "=" + 1;
         }
 
+        public static String getSortOrderMostPopular() {
+            return COLUMN_POPULARITY + " DESC";
+        }
+
+        public static String getSortOrderTopRated() {
+            return COLUMN_RATING + " DESC";
+        }
+
         public static String getSqlOrderByPopularityDescending() { return COLUMN_POPULARITY + " DESC";}
     }
 }
