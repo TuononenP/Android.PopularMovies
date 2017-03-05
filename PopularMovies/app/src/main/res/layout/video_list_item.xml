@@ -7,8 +7,8 @@
     <ImageView
         android:id="@+id/iv_video_image"
         android:layout_gravity="center"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
         android:src="@android:drawable/ic_media_play"
         android:tint="@color/colorAccent"/>
 
@@ -17,7 +17,7 @@
         android:layout_gravity="center"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textSize="20dp"
+        android:textSize="13sp"
         android:text="@string/video_title"/>
 
     <TextView

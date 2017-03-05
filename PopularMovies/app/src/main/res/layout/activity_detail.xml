@@ -78,7 +78,7 @@
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:text="@string/videos_title"
-            android:layout_marginBottom="0dp"/>
+            android:textSize="16sp"/>
         <ListView
             android:id="@+id/lw_videos"
             android:layout_height="52dp"
@@ -89,7 +89,7 @@
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:text="@string/reviews_title"
-            android:layout_marginBottom="0dp"/>
+            android:textSize="16sp"/>
 
         <ListView
             android:id="@+id/lw_reviews"
