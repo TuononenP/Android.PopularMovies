@@ -18,6 +18,7 @@ import com.petrituononen.popularmovies.data.ContentValuesHelper;
 import com.petrituononen.popularmovies.data.MovieContract;
 import com.petrituononen.popularmovies.data.ParcelableMovieDb;
 import com.petrituononen.popularmovies.utilities.PicassoUtils;
+import com.petrituononen.popularmovies.utilities.ReviewsAdapter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -91,10 +92,11 @@ public class DetailActivity extends AppCompatActivity {
                         reviewList.add(review.getContent());
                     }
                     String[] reviewArray = reviewList.toArray(new String[reviews.size()]);
-                    ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
-                            android.R.layout.simple_list_item_1, android.R.id.text1, reviewArray);
+//                    ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
+//                            android.R.layout.simple_list_item_1, android.R.id.text1, reviewArray);
 
-                    mReviewsListView.setAdapter(adapter);
+                    ReviewsAdapter reviewsAdapter = new ReviewsAdapter(reviewArray);
+                    mReviewsListView.setAdapter(reviewsAdapter);
 
                     //List<Video> videos = mMovieDb.getVideos();
 
