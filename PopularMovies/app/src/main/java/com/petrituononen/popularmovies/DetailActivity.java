@@ -1,22 +1,20 @@
 package com.petrituononen.popularmovies;
 
-import android.content.ContentValues;
 import android.content.Intent;
-import android.database.Cursor;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.petrituononen.popularmovies.data.ContentValuesHelper;
 import com.petrituononen.popularmovies.data.MovieContract;
 import com.petrituononen.popularmovies.data.ParcelableMovieDb;
+import com.petrituononen.popularmovies.data.VideoListModel;
 import com.petrituononen.popularmovies.utilities.PicassoUtils;
 
 import java.util.ArrayList;
@@ -62,6 +60,9 @@ public class DetailActivity extends AppCompatActivity {
     @BindView(R.id.plot_synopsis_textview) TextView mPlotSynopsisTextView;
     @BindView(R.id.movie_thumbnail_imageview) ImageView mMovieThumbnailImageView;
     @BindView(R.id.lw_reviews) ListView mReviewsListView;
+    @BindView(R.id.lw_videos) ListView mVideosListView;
+    @BindView(R.id.tv_videos_title) TextView mVideoTitleTextView;
+    @BindView(R.id.tv_review_title) TextView mReviewsTitleTextView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -91,12 +92,30 @@ public class DetailActivity extends AppCompatActivity {
                         reviewList.add(review.getContent());
                     }
                     String[] reviewArray = reviewList.toArray(new String[reviews.size()]);
-                    ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
+
+                    ArrayAdapter<String> reviewsAdapter = new ArrayAdapter<String>(this,
                             android.R.layout.simple_list_item_1, android.R.id.text1, reviewArray);
+                    mReviewsListView.setAdapter(reviewsAdapter);
 
-                    mReviewsListView.setAdapter(adapter);
+                    if (reviewList.size() == 0) {
+                        mReviewsTitleTextView.setVisibility(View.INVISIBLE);
+                    }
 
-                    //List<Video> videos = mMovieDb.getVideos();
+                    List<Video> videos = mMovieDb.getVideos();
+                    List<VideoListModel> videoModels = new ArrayList<>();
+                    for(Video video : videos) {
+                        if (video.getSite().toLowerCase().equals("youtube") && video.getType().toLowerCase().equals("trailer")) {
+                            VideoListModel model = new VideoListModel(video.getName(), formYoutubeUrl(video.getKey()));
+                            videoModels.add(model);
+                        }
+                    }
+
+                    VideoListAdapter videosAdapter = new VideoListAdapter(this, videoModels);
+                    mVideosListView.setAdapter(videosAdapter);
+
+                    if (videos.size() == 0) {
+                        mVideoTitleTextView.setVisibility(View.INVISIBLE);
+                    }
 
                     // TODO: Set star icon to on state if movie is favorite
 //                    int movieId = mMovieDb.getId();
@@ -145,5 +164,10 @@ public class DetailActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.details, menu);
         return true;
+    }
+
+    private String formYoutubeUrl(String id) {
+        String youtubeBaseUrl = "http://www.youtube.com/watch?v=";
+        return youtubeBaseUrl + id;
     }
 }

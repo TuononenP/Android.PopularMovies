@@ -25,4 +25,7 @@
     <string name="menu_item_favorite_movie">Favorite</string>
     <string name="content_authority">com.petrituononen.popularmovies</string>
     <string name="api_key_not_found_warning">themoviedb.org api key was not found</string>
+    <string name="reviews_title">Reviews</string>
+    <string name="videos_title">Trailers</string>
+    <string name="video_title">Video Title</string>
 </resources>
