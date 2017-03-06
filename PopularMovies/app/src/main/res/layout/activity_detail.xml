@@ -53,6 +53,7 @@
             android:layout_toEndOf="@+id/movie_thumbnail_imageview"
             android:paddingLeft="20dp"
             android:paddingRight="20dp"
+            android:textSize="12sp"
             android:layout_below="@+id/movie_rating_textview"
             android:layout_alignBottom="@+id/movie_thumbnail_imageview" />
 
