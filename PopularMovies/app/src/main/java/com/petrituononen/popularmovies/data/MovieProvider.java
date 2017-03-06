@@ -9,6 +9,7 @@ import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.support.annotation.NonNull;
+import android.util.Log;
 
 /**
  * Created by Petri Tuononen on 12.2.2017.
@@ -162,7 +163,9 @@ public class MovieProvider extends ContentProvider {
                 try {
                         long id = db.insertOrThrow(MovieContract.MovieEntry.TABLE_NAME, null, values);
                         if (id == -1) {
-                            throw new SQLException("Failed to insert row into " + uri);
+                            String msg = "Failed to insert row into " + uri;
+                            Log.w("MovieProvider", msg);
+                            throw new SQLException(msg);
                         }
                         newUri = MovieContract.MovieEntry.buildMovieUriWithId(id);
                         getContext().getContentResolver().notifyChange(newUri, null);
@@ -184,12 +187,17 @@ public class MovieProvider extends ContentProvider {
         if (null == selection) selection = "1";
 
         switch (sUriMatcher.match(uri)) {
-
             case CODE_MOVIE:
+            case CODE_MOVIE_WITH_ID:
                 numRowsDeleted = mDbHelper.getWritableDatabase().delete(
                         MovieContract.MovieEntry.TABLE_NAME,
                         selection,
                         selectionArgs);
+                if (numRowsDeleted == -1) {
+                    String msg = "Failed to delete row " + uri;
+                    Log.w("MovieProvider", msg);
+                    throw new SQLException(msg);
+                }
                 break;
             default:
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
@@ -204,7 +212,31 @@ public class MovieProvider extends ContentProvider {
 
     @Override
     public int update(@NonNull Uri uri, ContentValues values, String selection, String[] selectionArgs) {
-        return 0;
+        int numRowsUpdated;
+
+        switch (sUriMatcher.match(uri)) {
+            case CODE_MOVIE:
+            case CODE_MOVIE_WITH_ID:
+                numRowsUpdated = mDbHelper.getWritableDatabase().update(
+                        MovieContract.MovieEntry.TABLE_NAME,
+                        values,
+                        selection,
+                        selectionArgs);
+                if (numRowsUpdated == -1) {
+                    String msg = "Failed to update row " + uri;
+                    Log.w("MovieProvider", msg);
+                    throw new SQLException(msg);
+                }
+                break;
+            default:
+                throw new UnsupportedOperationException("Unknown uri: " + uri);
+        }
+
+        if (numRowsUpdated != 0) {
+            getContext().getContentResolver().notifyChange(uri, null);
+        }
+
+        return numRowsUpdated;
     }
 
     @Override

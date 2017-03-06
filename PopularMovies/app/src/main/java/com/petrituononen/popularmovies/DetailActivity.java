@@ -1,7 +1,13 @@
 package com.petrituononen.popularmovies;
 
+import android.content.ContentValues;
 import android.content.Intent;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Bundle;
+import android.support.v4.content.res.ResourcesCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
@@ -12,6 +18,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.petrituononen.popularmovies.data.MovieContract;
+import com.petrituononen.popularmovies.data.MovieDbHelper;
 import com.petrituononen.popularmovies.data.ParcelableMovieDb;
 import com.petrituononen.popularmovies.data.VideoListModel;
 import com.petrituononen.popularmovies.utilities.PicassoUtils;
@@ -34,6 +41,7 @@ public class DetailActivity extends AppCompatActivity {
     private static final String CLICKED_MOVIE_DB_STATE = "clicked_movie_db_state";
     private ParcelableMovieDb mMovieDb;
     private PicassoUtils mPicassoUtils = new PicassoUtils();
+    private boolean mIsFavoriteMovie;
 
     public static final String[] MOVIE_DETAIL_PROJECTION = {
             MovieContract.MovieEntry.COLUMN_MOVIE_ID,
@@ -86,29 +94,7 @@ public class DetailActivity extends AppCompatActivity {
                     mPicassoUtils.loadAlbumArtThumbnail(this, mMovieThumbnailImageView, imageUrl);
 
                     showReviews();
-
                     showVideos();
-
-                    // TODO: Set star icon to on state if movie is favorite
-//                    int movieId = mMovieDb.getId();
-//                    // find movie from database
-//                    Uri uri = MovieContract.MovieEntry.buildMovieUriWithId(movieId);
-//                    Cursor cursor = getContentResolver().query(uri, MOVIE_DETAIL_PROJECTION, null, null, null);
-//                    if (cursor != null && cursor.moveToFirst()) {
-//                        if (cursor.getInt(INDEX_MOVIE_ID) == movieId) {
-//                            String title = cursor.getString(INDEX_MOVIE_TITLE);
-//                            Boolean isFavorite = cursor.getInt(INDEX_MOVIE_FAVORITE) == 1;
-//                            String poster = cursor.getString(INDEX_MOVIE_POSTER);
-//                            String synopsis = cursor.getString(INDEX_MOVIE_SYNOPSIS);
-//                            float ratingFloat = cursor.getFloat(INDEX_MOVIE_RATING);
-//                            String releaseDate = cursor.getString(INDEX_MOVIE_RELEASE_DATE);
-//                        }
-//                    }
-//                    else {
-//                        // add if does not exists
-//                        getContentResolver().insert(MovieContract.MovieEntry.CONTENT_URI, mMovieDb.GetContentValues(getBaseContext(), true));
-//                    }
-//                    getContentResolver().insert(MovieContract.MovieEntry.CONTENT_URI, mMovieDb.GetContentValues(getBaseContext(), true));
                 }
                 catch (Exception ex) {
                     Log.w(TAG, ex.getMessage());
@@ -160,8 +146,28 @@ public class DetailActivity extends AppCompatActivity {
                 finish();
                 return true;
             case R.id.save_as_favorite_movie:
-                //TODO: Implement saving favorite movie
-
+                boolean isFavorite = !mIsFavoriteMovie;
+                mIsFavoriteMovie = isFavorite;
+                Cursor cursor = getMovieCursor();
+                // Insert/Update cursor
+                if (cursor == null) {
+                    // insert
+                    getContentResolver().insert(MovieContract.MovieEntry.CONTENT_URI,
+                        mMovieDb.GetContentValues(getBaseContext(), isFavorite));
+                }
+                else {
+                    // update
+                    getContentResolver().update(MovieContract.MovieEntry.CONTENT_URI,
+                            mMovieDb.GetContentValues(getBaseContext(), isFavorite),
+                            MovieContract.MovieEntry.getMovieIdSelection(mMovieDb.getId()), null);
+                }
+                // update menu item star icon
+                if(isFavorite) {
+                    item.setIcon(getResources().getDrawable(android.R.drawable.btn_star_big_on, null));
+                }
+                else {
+                    item.setIcon(getResources().getDrawable(android.R.drawable.btn_star_big_off, null));
+                }
                 break;
     }
         return super.onOptionsItemSelected(item);
@@ -170,11 +176,63 @@ public class DetailActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.details, menu);
+
         return true;
     }
 
     private String formYoutubeUrl(String id) {
         String youtubeBaseUrl = "http://www.youtube.com/watch?v=";
         return youtubeBaseUrl + id;
+    }
+
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        MenuItem saveAsFavoriteMovieMenuItem = menu.findItem(R.id.save_as_favorite_movie);
+        Cursor cursor = getMovieCursor();
+        if (cursor != null && cursor.moveToFirst()) {
+            Boolean isFavorite = cursor.getInt(INDEX_MOVIE_FAVORITE) == 1;
+            mIsFavoriteMovie = isFavorite;
+            if (isFavorite) {
+                saveAsFavoriteMovieMenuItem.setIcon(getResources().getDrawable(android.R.drawable.btn_star_big_on, null));
+            }
+            else {
+                saveAsFavoriteMovieMenuItem.setIcon(getResources().getDrawable(android.R.drawable.btn_star_big_off, null));
+            }
+        }
+
+        return super.onPrepareOptionsMenu(menu);
+    }
+
+    private Cursor getMovieCursor() {
+        Cursor cursor = null;
+        if (mMovieDb != null) {
+            int movieId = mMovieDb.getId();
+            // find movie from database
+            Uri uri = MovieContract.MovieEntry.buildMovieUriWithId(movieId);
+            cursor = getContentResolver().query(uri, MOVIE_DETAIL_PROJECTION, null, null, null);
+        }
+
+        return cursor;
+    }
+
+    private void loadFromCursor() {
+        Cursor cursor = getMovieCursor();
+        if (cursor != null && cursor.moveToFirst()) {
+            String title = cursor.getString(INDEX_MOVIE_TITLE);
+            Boolean isFavorite = cursor.getInt(INDEX_MOVIE_FAVORITE) == 1;
+            String poster = cursor.getString(INDEX_MOVIE_POSTER);
+            String synopsis = cursor.getString(INDEX_MOVIE_SYNOPSIS);
+            float ratingFloat = cursor.getFloat(INDEX_MOVIE_RATING);
+            String releaseDate = cursor.getString(INDEX_MOVIE_RELEASE_DATE);
+
+            String releaseYear = releaseDate.substring(0,4);
+            mReleaseYearTextView.setText(releaseYear);
+            mOriginalTitleTextView.setText(title);
+            String rating = String.format("%1$.1f / 10", ratingFloat);
+            mUserRatingTextView.setText(rating);
+            mPlotSynopsisTextView.setText(synopsis);
+            String imageUrl = mPicassoUtils.formMoviePosterUrl(mMovieDb, this);
+            mPicassoUtils.loadAlbumArtThumbnail(this, mMovieThumbnailImageView, imageUrl);
+        }
     }
 }

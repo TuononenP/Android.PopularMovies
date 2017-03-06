@@ -131,6 +131,7 @@ public class ParcelableMovieDb extends IdElement implements Multi, Parcelable {
         PicassoUtils picassoUtils = new PicassoUtils();
         String posterPath = picassoUtils.formMoviePosterUrl(this, context);
 
+        values.put(MovieContract.MovieEntry._ID, this.getId());
         values.put(MovieContract.MovieEntry.COLUMN_MOVIE_ID, this.getId());
         values.put(MovieContract.MovieEntry.COLUMN_TITLE, this.getTitle());
         values.put(MovieContract.MovieEntry.COLUMN_FAVORITE, isFavorite);

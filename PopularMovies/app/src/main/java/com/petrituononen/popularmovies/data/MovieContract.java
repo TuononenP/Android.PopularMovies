@@ -56,6 +56,8 @@ public class MovieContract {
             return COLUMN_RATING + " DESC";
         }
 
-        public static String getSqlOrderByPopularityDescending() { return COLUMN_POPULARITY + " DESC";}
+        public static String getMovieIdSelection(int id) {
+            return COLUMN_MOVIE_ID + "=" + id;
+        }
     }
 }
