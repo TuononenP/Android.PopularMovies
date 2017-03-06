@@ -65,7 +65,8 @@
             android:layout_below="@+id/movie_rating_textview"
             android:layout_alignEnd="@+id/movie_release_year_textview"
             android:layout_marginTop="13dp"
-            android:layout_alignParentBottom="true" />
+            android:layout_alignParentBottom="true"
+            android:layout_toEndOf="@+id/movie_thumbnail_imageview" />
 
         <LinearLayout
             android:layout_width="wrap_content"
@@ -84,10 +85,8 @@
 
             <ListView
                 android:id="@+id/lw_videos"
-                android:layout_height="52dp"
-                android:layout_width="match_parent"
-                android:layout_weight="1.90">
-            </ListView>
+                android:layout_width="274dp"
+                android:layout_height="52dp"></ListView>
         </LinearLayout>
 
         <LinearLayout
@@ -107,7 +106,7 @@
 
             <ListView
                 android:id="@+id/lw_reviews"
-                android:layout_height="130dp"
+                android:layout_height="match_parent"
                 android:layout_width="274dp">
             </ListView>
         </LinearLayout>
