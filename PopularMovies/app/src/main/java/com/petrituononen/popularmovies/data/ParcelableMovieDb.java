@@ -55,7 +55,7 @@ public class ParcelableMovieDb extends IdElement implements Multi, Parcelable {
 
     public ParcelableMovieDb(Context context, Cursor cursor) {
         this.setId(cursor.getInt(cursor.getColumnIndex(MovieContract.MovieEntry.COLUMN_MOVIE_ID)));
-        this.title = cursor.getString(cursor.getColumnIndex(MovieContract.MovieEntry.COLUMN_TITLE));
+        this.originalTitle = cursor.getString(cursor.getColumnIndex(MovieContract.MovieEntry.COLUMN_TITLE));
         this.isFavorite = cursor.getInt(cursor.getColumnIndex(MovieContract.MovieEntry.COLUMN_FAVORITE)) > 0;
         this.posterPath = cursor.getString(cursor.getColumnIndex(MovieContract.MovieEntry.COLUMN_POSTER));
         this.overview = cursor.getString(cursor.getColumnIndex(MovieContract.MovieEntry.COLUMN_SYNOPSIS));
@@ -130,7 +130,7 @@ public class ParcelableMovieDb extends IdElement implements Multi, Parcelable {
 
         values.put(MovieContract.MovieEntry._ID, this.getId());
         values.put(MovieContract.MovieEntry.COLUMN_MOVIE_ID, this.getId());
-        values.put(MovieContract.MovieEntry.COLUMN_TITLE, this.getTitle());
+        values.put(MovieContract.MovieEntry.COLUMN_TITLE, this.getOriginalTitle());
         values.put(MovieContract.MovieEntry.COLUMN_FAVORITE, isFavorite);
         values.put(MovieContract.MovieEntry.COLUMN_POSTER, this.posterPath);
         values.put(MovieContract.MovieEntry.COLUMN_SYNOPSIS, this.getOverview());

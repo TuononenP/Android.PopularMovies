@@ -22,7 +22,7 @@ public final class ContentValuesHelper {
         String posterPath = picassoUtils.formMoviePosterUrl(movieDb, context);
 
         values.put(MovieContract.MovieEntry.COLUMN_MOVIE_ID, movieDb.getId());
-        values.put(MovieContract.MovieEntry.COLUMN_TITLE, movieDb.getTitle());
+        values.put(MovieContract.MovieEntry.COLUMN_TITLE, movieDb.getOriginalTitle());
         values.put(MovieContract.MovieEntry.COLUMN_FAVORITE, isFavorite);
         values.put(MovieContract.MovieEntry.COLUMN_POSTER, posterPath);
         values.put(MovieContract.MovieEntry.COLUMN_SYNOPSIS, movieDb.getOverview());

@@ -45,41 +45,6 @@ public class MovieProvider extends ContentProvider {
     }
 
     @Override
-    public int bulkInsert(@NonNull Uri uri, @NonNull ContentValues[] values) {
-        final SQLiteDatabase db = mDbHelper.getWritableDatabase();
-
-        switch (sUriMatcher.match(uri)) {
-
-            case CODE_MOVIE:
-                db.beginTransaction();
-                int rowsInserted = 0;
-                try {
-                    for (ContentValues value : values) {
-                        long id = db.insert(MovieContract.MovieEntry.TABLE_NAME, null, value);
-                        if (id == -1) {
-                            throw new SQLException("Failed to insert row into " + uri);
-                        }
-                        else {
-                            rowsInserted++;
-                        }
-                    }
-                    db.setTransactionSuccessful();
-                } finally {
-                    db.endTransaction();
-                }
-
-                if (rowsInserted > 0) {
-                    getContext().getContentResolver().notifyChange(uri, null);
-                }
-
-                return rowsInserted;
-
-            default:
-                return super.bulkInsert(uri, values);
-        }
-    }
-
-    @Override
     public Cursor query(@NonNull Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
         Cursor cursor;
 
@@ -177,6 +142,41 @@ public class MovieProvider extends ContentProvider {
                 return newUri;
             default:
                 return null;
+        }
+    }
+
+    @Override
+    public int bulkInsert(@NonNull Uri uri, @NonNull ContentValues[] values) {
+        final SQLiteDatabase db = mDbHelper.getWritableDatabase();
+
+        switch (sUriMatcher.match(uri)) {
+
+            case CODE_MOVIE:
+                db.beginTransaction();
+                int rowsInserted = 0;
+                try {
+                    for (ContentValues value : values) {
+                        long id = db.insert(MovieContract.MovieEntry.TABLE_NAME, null, value);
+                        if (id == -1) {
+                            throw new SQLException("Failed to insert row into " + uri);
+                        }
+                        else {
+                            rowsInserted++;
+                        }
+                    }
+                    db.setTransactionSuccessful();
+                } finally {
+                    db.endTransaction();
+                }
+
+                if (rowsInserted > 0) {
+                    getContext().getContentResolver().notifyChange(uri, null);
+                }
+
+                return rowsInserted;
+
+            default:
+                return super.bulkInsert(uri, values);
         }
     }
 
