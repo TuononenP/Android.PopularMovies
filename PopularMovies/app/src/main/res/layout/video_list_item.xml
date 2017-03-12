@@ -2,7 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="horizontal" android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:padding="6dip">
+    android:padding="5dip">
 
     <ImageView
         android:id="@+id/iv_video_image"

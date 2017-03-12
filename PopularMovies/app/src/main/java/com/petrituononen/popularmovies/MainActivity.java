@@ -22,6 +22,7 @@ import android.widget.Toast;
 
 import com.petrituononen.popularmovies.data.MovieContract;
 import com.petrituononen.popularmovies.data.ParcelableMovieDb;
+import com.petrituononen.popularmovies.data.Preferences;
 import com.petrituononen.popularmovies.exceptions.ApiKeyNotFoundException;
 import com.petrituononen.popularmovies.exceptions.NoInternetConnectionException;
 import com.petrituononen.popularmovies.utilities.BasicUtils;
@@ -270,12 +271,16 @@ public class MainActivity
                 List<MovieDb> movieList = new ArrayList<>();
                 ArrayList<ParcelableMovieDb> movies = new ArrayList<>();
                 Cursor cursor = null;
+                int moviesPerPage = 20;
+                int pageCount = (Preferences.MOVIE_COUNT + moviesPerPage - 1) / moviesPerPage;
                 switch (sortOrder) {
                     case TOP_RATED:
                         try {
-                            MovieResultsPage resultPage =
-                                    mMovieUtils.getTopRated(this.getContext(), 0);
-                            movieList = resultPage.getResults();
+                            for(int i = 0; i < pageCount; i++) {
+                                MovieResultsPage resultPage =
+                                        mMovieUtils.getTopRated(this.getContext(), i);
+                                movieList.addAll(resultPage.getResults());
+                            }
                         } catch (NoInternetConnectionException e) {
                             logNoInternetConnectionException(e);
                         } catch (ApiKeyNotFoundException e) {
@@ -292,9 +297,11 @@ public class MainActivity
                         break;
                     case MOST_POPULAR:
                         try {
-                            MovieResultsPage resultPage =
-                                    mMovieUtils.getMostPopular(this.getContext(), 0);
-                            movieList = resultPage.getResults();
+                            for(int i = 0; i < pageCount; i++) {
+                                MovieResultsPage resultPage =
+                                        mMovieUtils.getMostPopular(this.getContext(), i);
+                                movieList.addAll(resultPage.getResults());
+                            }
                         } catch (NoInternetConnectionException e) {
                             logNoInternetConnectionException(e);
                         } catch (ApiKeyNotFoundException e) {

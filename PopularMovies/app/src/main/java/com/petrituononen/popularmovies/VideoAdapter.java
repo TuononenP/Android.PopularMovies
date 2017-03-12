@@ -1,6 +1,8 @@
 package com.petrituononen.popularmovies;
 
 import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -23,21 +25,22 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.VideoViewHol
 
     List<VideoListModel> mVideos;
     Context mContext;
-    final private VideoAdapter.ListItemClickListener mOnClickListener;
 
-    public VideoAdapter(Context context, List<VideoListModel> videos, VideoAdapter.ListItemClickListener listener) {
+//    final private VideoListItemClickListener mOnClickListener;
+
+    public VideoAdapter(Context context, List<VideoListModel> videos/*, VideoListItemClickListener listener*/) {
         if (videos != null) {
             mVideos = videos;
         }
         else {
             mVideos = new ArrayList<>();
         }
-        mOnClickListener = listener;
+//        mOnClickListener = listener;
     }
 
-    public interface ListItemClickListener {
-        void onListItemClick(int clickedItemIndex);
-    }
+//    public interface VideoListItemClickListener {
+//        void onListItemClick(int clickedItemIndex);
+//    }
 
     @Override
     public VideoViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
@@ -69,6 +72,7 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.VideoViewHol
         public VideoViewHolder(View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
+            itemView.setOnClickListener(this);
         }
 
         void bind(VideoListModel video) {
@@ -78,7 +82,9 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.VideoViewHol
 
         @Override
         public void onClick(View v) {
-            mOnClickListener.onListItemClick(getAdapterPosition());
+            mContext.startActivity(new Intent(Intent.ACTION_VIEW,
+                            Uri.parse(mVideos.get(getAdapterPosition()).getUrl())));
+//            mOnClickListener.onListItemClick(getAdapterPosition());
         }
     }
 }

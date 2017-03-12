@@ -33,7 +33,7 @@ import info.movito.themoviedbapi.model.Video;
  * Created by Petri Tuononen on 24.1.2017.
  * Show details of the movie.
  */
-public class DetailActivity extends AppCompatActivity implements VideoAdapter.ListItemClickListener {
+public class DetailActivity extends AppCompatActivity {
 
     private static final String TAG = DetailActivity.class.getSimpleName();
     private static final String CLICKED_MOVIE_DB_STATE = "clicked_movie_db_state";
@@ -147,7 +147,7 @@ public class DetailActivity extends AppCompatActivity implements VideoAdapter.Li
         mVideosRecyclerView.setHasFixedSize(true);
         mVideosRecyclerView.setNestedScrollingEnabled(false);
 
-        VideoAdapter videoAdapter = new VideoAdapter(this, videoModels, this);
+        VideoAdapter videoAdapter = new VideoAdapter(this, videoModels);
         mVideosRecyclerView.setAdapter(videoAdapter);
         videoAdapter.notifyDataSetChanged();
 
@@ -244,11 +244,5 @@ public class DetailActivity extends AppCompatActivity implements VideoAdapter.Li
         }
 
         return cursor;
-    }
-
-    @Override
-    public void onListItemClick(int clickedItemIndex) {
-        getApplicationContext().startActivity(new Intent(Intent.ACTION_VIEW,
-                Uri.parse(mVideoListModels.get(clickedItemIndex).getUrl())));
     }
 }
