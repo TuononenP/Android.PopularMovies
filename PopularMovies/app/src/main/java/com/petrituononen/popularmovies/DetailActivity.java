@@ -102,9 +102,9 @@ public class DetailActivity extends AppCompatActivity {
                     Log.w(TAG, ex.getMessage());
                 }
                 if (!NetworkUtils.isOnline(getApplicationContext())) {
-                    Toast.makeText(getApplicationContext(),
-                            "Internet access is required to view reviews and trailers",
-                            Toast.LENGTH_LONG);
+                    Toast.makeText(DetailActivity.this,
+                            R.string.internet_access_required_to_view_reviews_and_trailers,
+                            Toast.LENGTH_LONG).show();
                 }
             }
         }

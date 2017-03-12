@@ -54,12 +54,15 @@ public class MainActivity
     private static final String MOST_POPULAR = "most-popular";
     private static final String FAVORITES = "favorites";
     private static final String SORT_ORDER = "sort-order";
+    private static final String MOVIES_FROM_DB = "movies-from-db";
     private static final int MOVIE_POSTER_LOADER = 77;
 
     private String mLastSortOrderState;
 
     private static int mImageWidth;
     private static int mImageHeight;
+
+    private boolean mMoviesFromDb;
 
     private MovieAdapter mAdapter;
     private GridLayoutManager mLayoutManager;
@@ -115,6 +118,10 @@ public class MainActivity
             if (savedInstanceState.containsKey(LAST_SORT_ORDER_STATE)) {
                 mLastSortOrderState = savedInstanceState.getString(LAST_SORT_ORDER_STATE);
             }
+
+            if (savedInstanceState.containsKey(MOVIES_FROM_DB)) {
+                mMoviesFromDb = savedInstanceState.getBoolean(MOVIES_FROM_DB);
+            }
         }
 
         if (mMoviesList.getAdapter() == null) {
@@ -134,6 +141,7 @@ public class MainActivity
         mListState = mMoviesList.getLayoutManager().onSaveInstanceState();
         saveInstanceState.putParcelable(LIST_INSTANCE_STATE, mListState);
         saveInstanceState.putString(LAST_SORT_ORDER_STATE, mLastSortOrderState);
+        saveInstanceState.putBoolean(MOVIES_FROM_DB, mMoviesFromDb);
     }
 
     @Override
@@ -142,6 +150,7 @@ public class MainActivity
         mMovies = savedInstanceState.getParcelableArrayList(MOVIE_LIST_SAVE_STATE);
         mListState = savedInstanceState.getParcelable(LIST_INSTANCE_STATE);
         mLastSortOrderState = savedInstanceState.getString(LAST_SORT_ORDER_STATE);
+        mMoviesFromDb = savedInstanceState.getBoolean(MOVIES_FROM_DB);
     }
 
     @Override
@@ -168,7 +177,11 @@ public class MainActivity
     }
 
     private void showErrorMessage() {
-        Toast.makeText(getBaseContext(), "Movies could not be fetched.", Toast.LENGTH_LONG).show();
+        Toast.makeText(getBaseContext(), R.string.could_not_fetch_movies, Toast.LENGTH_LONG).show();
+    }
+
+    private void showErrorMessage(String message) {
+        Toast.makeText(getBaseContext(), message, Toast.LENGTH_LONG).show();
     }
 
     private void showTopRatedMovies() {
@@ -307,10 +320,14 @@ public class MainActivity
 
                 // convert to parcelable movieDb from Cursor
                 if (cursor != null && cursor.moveToFirst()){
+                    mMoviesFromDb = true;
                     while(!cursor.isAfterLast()){
                         movies.add(new ParcelableMovieDb(getBaseContext(), cursor));
                         cursor.moveToNext();
                     }
+                }
+                else {
+                    mMoviesFromDb = false;
                 }
 
                 if (cursor != null) {
@@ -344,22 +361,33 @@ public class MainActivity
     public void onLoadFinished(Loader<ArrayList<ParcelableMovieDb>> loader,
                                ArrayList<ParcelableMovieDb> data) {
         mLoadingIndicator.setVisibility(View.INVISIBLE);
+        mNoInternetAccessTextView.setVisibility(View.INVISIBLE);
+
         // check internet connectivity and display warning if needed
-        if (NetworkUtils.isOnline(loader.getContext())) {
-            mNoInternetAccessTextView.setVisibility(View.INVISIBLE);
+        if (!mMoviesFromDb) {
+            if (!NetworkUtils.isOnline(loader.getContext())) {
+                mNoInternetAccessTextView.setVisibility(View.VISIBLE);
+            }
         }
-        else {
-            mNoInternetAccessTextView.setVisibility(View.VISIBLE);
-        }
+
         if (data == null || data.size() == 0) {
-            showErrorMessage();
+            switch (mLastSortOrderState) {
+                case TOP_RATED:
+                    showErrorMessage(getString(R.string.could_not_fetch_top_rated_movies));
+                    break;
+                case MOST_POPULAR:
+                    showErrorMessage(getString(R.string.could_not_fetch_popular_movies));
+                    break;
+                case FAVORITES:
+                    showErrorMessage(getString(R.string.could_not_fetch_favorite_movies));
+                    break;
+            }
         }
-        else {
-            mMovies = data;
-            mAdapter = new MovieAdapter(data, mImageWidth, mImageHeight, this);
-            mMoviesList.setAdapter(mAdapter);
-            mAdapter.notifyDataSetChanged();
-        }
+
+        mMovies = data;
+        mAdapter = new MovieAdapter(data, mImageWidth, mImageHeight, this);
+        mMoviesList.setAdapter(mAdapter);
+        mAdapter.notifyDataSetChanged();
     }
 
     @Override

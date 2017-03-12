@@ -31,4 +31,9 @@
     <string name="videos_not_found">Trailers not found</string>
     <string name="reviews_not_found">Reviews not found</string>
     <string name="review_by">Review by</string>
+    <string name="internet_access_required_to_view_reviews_and_trailers">Internet access is required to view reviews and trailers</string>
+    <string name="could_not_fetch_movies">Movies could not be fetched.</string>
+    <string name="could_not_fetch_popular_movies">Popular movies could not be fetched.</string>
+    <string name="could_not_fetch_top_rated_movies">Top rated movies could not be fetched.</string>
+    <string name="could_not_fetch_favorite_movies">Favorite movies could not be fetched.</string>
 </resources>
