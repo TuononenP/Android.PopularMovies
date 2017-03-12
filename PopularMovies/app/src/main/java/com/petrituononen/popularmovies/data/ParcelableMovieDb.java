@@ -70,39 +70,49 @@ public class ParcelableMovieDb extends IdElement implements Multi, Parcelable {
             e.printStackTrace();
         } catch (ApiKeyNotFoundException e) {
             e.printStackTrace();
+        } catch (Exception e) {
+            Log.w("ParcelableMovieDb", e.getMessage());
+            e.printStackTrace();
         }
     }
 
     public ParcelableMovieDb(Context context, MovieDb movieDb) {
-        this.setId(movieDb.getId());
-        this.title = movieDb.getTitle();
-        this.originalTitle = movieDb.getOriginalTitle();
-        this.popularity = movieDb.getPopularity();
-        this.backdropPath = movieDb.getBackdropPath();
-        this.posterPath = movieDb.getPosterPath();
-        this.releaseDate = movieDb.getReleaseDate();
-        this.adult = movieDb.isAdult();
-        this.belongsToCollection = movieDb.getBelongsToCollection();
-        this.budget = movieDb.getBudget();
-        this.genres = movieDb.getGenres();
-        this.homepage = movieDb.getHomepage();
-        this.overview = movieDb.getOverview();
-        this.imdbID = movieDb.getImdbID();
-        this.productionCompanies = movieDb.getProductionCompanies();
-        this.productionCountries = movieDb.getProductionCountries();
-        this.revenue = movieDb.getRevenue();
-        this.runtime = movieDb.getRuntime();
-        this.spokenLanguages = movieDb.getSpokenLanguages();
-        this.tagline = movieDb.getTagline();
-        this.userRating = movieDb.getUserRating();
-        this.voteAverage = movieDb.getVoteAverage();
-        this.voteCount = movieDb.getVoteCount();
-        this.status = movieDb.getStatus();
-        this.alternativeTitles = (MoviesAlternativeTitles) movieDb.getAlternativeTitles();
-        this.credits = movieDb.getCredits();
-        this.images = (MovieImages) movieDb.getImages();
-        this.keywords = (MovieKeywords) movieDb.getKeywords();
-        this.releases = (TmdbMovies.ReleaseInfoResults) movieDb.getReleases();
+        try {
+            this.setId(movieDb.getId());
+            this.title = movieDb.getTitle();
+            this.originalTitle = movieDb.getOriginalTitle();
+            this.popularity = movieDb.getPopularity();
+            this.backdropPath = movieDb.getBackdropPath();
+            this.posterPath = movieDb.getPosterPath();
+            this.releaseDate = movieDb.getReleaseDate();
+            this.adult = movieDb.isAdult();
+            this.belongsToCollection = movieDb.getBelongsToCollection();
+            this.budget = movieDb.getBudget();
+            this.genres = movieDb.getGenres();
+            this.homepage = movieDb.getHomepage();
+            this.overview = movieDb.getOverview();
+            this.imdbID = movieDb.getImdbID();
+            this.productionCompanies = movieDb.getProductionCompanies();
+            this.productionCountries = movieDb.getProductionCountries();
+            this.revenue = movieDb.getRevenue();
+            this.runtime = movieDb.getRuntime();
+            this.spokenLanguages = movieDb.getSpokenLanguages();
+            this.tagline = movieDb.getTagline();
+            this.userRating = movieDb.getUserRating();
+            this.voteAverage = movieDb.getVoteAverage();
+            this.voteCount = movieDb.getVoteCount();
+            this.status = movieDb.getStatus();
+            this.alternativeTitles = (MoviesAlternativeTitles) movieDb.getAlternativeTitles();
+            this.credits = movieDb.getCredits();
+            this.images = (MovieImages) movieDb.getImages();
+            this.keywords = (MovieKeywords) movieDb.getKeywords();
+            this.releases = (TmdbMovies.ReleaseInfoResults) movieDb.getReleases();
+            this.translations = (MovieTranslations) movieDb.getTranslations();
+        } catch (Exception e) {
+            Log.w("ParcelableMovieDb cstr", e.getMessage());
+            e.printStackTrace();
+        }
+
 //        this.videos = (Video.Results) movieDb.getVideos();
         try {
             this.videos = movieDbUtils.getVideos(context, this.getId());
@@ -111,8 +121,11 @@ public class ParcelableMovieDb extends IdElement implements Multi, Parcelable {
             e.printStackTrace();
         } catch (ApiKeyNotFoundException e) {
             e.printStackTrace();
+        } catch(Exception e) {
+            Log.w("ParcelableMovieDb cstr", e.getMessage());
+            e.printStackTrace();
         }
-        this.translations = (MovieTranslations) movieDb.getTranslations();
+
         try {
             this.similarMovies = (ResultsPage<MovieDb>) movieDb.getSimilarMovies();
             this.lists = (ResultsPage<MovieList>) movieDb.getLists();

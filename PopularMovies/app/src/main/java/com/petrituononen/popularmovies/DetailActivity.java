@@ -1,25 +1,21 @@
 package com.petrituononen.popularmovies;
 
-import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
-import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.v4.content.res.ResourcesCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
-import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.petrituononen.popularmovies.data.MovieContract;
-import com.petrituononen.popularmovies.data.MovieDbHelper;
 import com.petrituononen.popularmovies.data.ParcelableMovieDb;
 import com.petrituononen.popularmovies.data.VideoListModel;
 import com.petrituononen.popularmovies.utilities.NetworkUtils;
@@ -37,13 +33,17 @@ import info.movito.themoviedbapi.model.Video;
  * Created by Petri Tuononen on 24.1.2017.
  * Show details of the movie.
  */
-public class DetailActivity extends AppCompatActivity {
+public class DetailActivity extends AppCompatActivity implements VideoAdapter.ListItemClickListener {
 
     private static final String TAG = DetailActivity.class.getSimpleName();
     private static final String CLICKED_MOVIE_DB_STATE = "clicked_movie_db_state";
     private ParcelableMovieDb mMovieDb;
+    private List<VideoListModel> mVideoListModels;
+    private List<Reviews> mReviews;
     private PicassoUtils mPicassoUtils = new PicassoUtils();
     private boolean mIsFavoriteMovie;
+    private LinearLayoutManager mReviewsLayoutManager;
+    private LinearLayoutManager mVideosLayoutManager;
 
     public static final String[] MOVIE_DETAIL_PROJECTION = {
             MovieContract.MovieEntry.COLUMN_MOVIE_ID,
@@ -68,8 +68,8 @@ public class DetailActivity extends AppCompatActivity {
     @BindView(R.id.movie_rating_textview) TextView mUserRatingTextView;
     @BindView(R.id.plot_synopsis_textview) TextView mPlotSynopsisTextView;
     @BindView(R.id.movie_thumbnail_imageview) ImageView mMovieThumbnailImageView;
-    @BindView(R.id.lw_reviews) ListView mReviewsListView;
-    @BindView(R.id.lw_videos) ListView mVideosListView;
+    @BindView(R.id.rv_movie_reviews) RecyclerView mReviewsRecyclerView;
+    @BindView(R.id.rv_movie_trailers) RecyclerView mVideosRecyclerView;
     @BindView(R.id.tv_videos_title) TextView mVideoTitleTextView;
     @BindView(R.id.tv_review_title) TextView mReviewsTitleTextView;
     @BindView(R.id.tv_videos_not_found) TextView mVideosNotFoundTextView;
@@ -112,9 +112,16 @@ public class DetailActivity extends AppCompatActivity {
 
     private void showReviews() {
         List<Reviews> reviews = mMovieDb.getReviews();
+        mReviews = reviews;
+
+        mReviewsLayoutManager = new LinearLayoutManager(this);
+        mReviewsRecyclerView.setLayoutManager(mReviewsLayoutManager);
+        mReviewsRecyclerView.setHasFixedSize(true);
+        mReviewsRecyclerView.setNestedScrollingEnabled(false);
 
         ReviewsAdapter reviewsAdapter = new ReviewsAdapter(reviews);
-        mReviewsListView.setAdapter(reviewsAdapter);
+        mReviewsRecyclerView.setAdapter(reviewsAdapter);
+        reviewsAdapter.notifyDataSetChanged();
 
         if (reviews.size() == 0) {
             mReviewsNotFoundTextView.setVisibility(View.VISIBLE);
@@ -133,9 +140,16 @@ public class DetailActivity extends AppCompatActivity {
                 videoModels.add(model);
             }
         }
+        mVideoListModels = videoModels;
 
-        VideoListAdapter videosAdapter = new VideoListAdapter(this, videoModels);
-        mVideosListView.setAdapter(videosAdapter);
+        mVideosLayoutManager = new LinearLayoutManager(this);
+        mVideosRecyclerView.setLayoutManager(mVideosLayoutManager);
+        mVideosRecyclerView.setHasFixedSize(true);
+        mVideosRecyclerView.setNestedScrollingEnabled(false);
+
+        VideoAdapter videoAdapter = new VideoAdapter(this, videoModels, this);
+        mVideosRecyclerView.setAdapter(videoAdapter);
+        videoAdapter.notifyDataSetChanged();
 
         if (videos.size() == 0) {
             mVideosNotFoundTextView.setVisibility(View.VISIBLE);
@@ -230,5 +244,11 @@ public class DetailActivity extends AppCompatActivity {
         }
 
         return cursor;
+    }
+
+    @Override
+    public void onListItemClick(int clickedItemIndex) {
+        getApplicationContext().startActivity(new Intent(Intent.ACTION_VIEW,
+                Uri.parse(mVideoListModels.get(clickedItemIndex).getUrl())));
     }
 }

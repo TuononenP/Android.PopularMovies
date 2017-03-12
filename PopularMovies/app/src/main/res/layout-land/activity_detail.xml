@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.v4.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/activity_detail"
     android:layout_width="match_parent"
@@ -11,136 +11,137 @@
     android:orientation="vertical"
     tools:context="com.petrituononen.popularmovies.DetailActivity">
 
-        <TextView
-            android:id="@+id/original_title_textview"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_alignParentStart="true"
-            android:layout_alignParentTop="true"
-            android:text="@string/details_activity_movie_original_title"
-            android:textSize="20sp" />
-
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="horizontal"
-        android:layout_marginTop="10dp">
-
-        <ImageView
-            android:id="@+id/movie_thumbnail_imageview"
-            android:layout_width="140dp"
-            android:layout_height="200dp"
-            android:layout_alignParentStart="true"
-            android:layout_below="@+id/original_title_textview"
-            android:background="#c0c0c0"
-            android:contentDescription="@string/details_activity_movie_thumbnail_description" />
+        android:orientation="vertical">
 
         <LinearLayout
-            android:layout_width="170dp"
-            android:layout_height="match_parent"
-            android:orientation="vertical">
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingBottom="10dp">
 
             <TextView
-                android:id="@+id/movie_release_year_textview"
+                android:id="@+id/original_title_textview"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_alignTop="@+id/movie_thumbnail_imageview"
-                android:layout_toEndOf="@+id/movie_thumbnail_imageview"
-                android:paddingLeft="20dp"
-                android:paddingRight="20dp"
-                android:text="@string/details_activity_movie_release_year" />
+                android:text="@string/details_activity_movie_original_title"
+                android:textSize="20sp" />
 
-            <TextView
-                android:id="@+id/movie_rating_textview"
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/movie_release_year_textview"
-                android:layout_toEndOf="@+id/movie_thumbnail_imageview"
-                android:paddingBottom="5dp"
-                android:paddingLeft="20dp"
-                android:paddingRight="20dp"
-                android:paddingTop="5dp"
-                android:text="@string/details_activity_movie_user_rating" />
+                android:orientation="horizontal"
+                android:paddingTop="10dp">
+                <ImageView
+                    android:id="@+id/movie_thumbnail_imageview"
+                    android:layout_width="140dp"
+                    android:layout_height="200dp"
+                    android:background="#c0c0c0"
+                    android:contentDescription="@string/details_activity_movie_thumbnail_description" />
 
-            <TextView
-                android:id="@+id/plot_synopsis_textview"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_below="@+id/movie_rating_textview"
-                android:layout_marginTop="13dp"
-                android:paddingLeft="20dp"
-                android:paddingRight="20dp"
-                android:text="@string/details_activity_movie_plot_synopsis"
-                android:textSize="12sp"
-                android:layout_alignBottom="@+id/movie_thumbnail_imageview"
-                android:layout_alignEnd="@+id/movie_release_year_textview" />
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="70dp"
+                        android:orientation="horizontal">
+
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:id="@+id/movie_release_year_textview"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:paddingLeft="20dp"
+                                android:paddingRight="20dp"
+                                android:text="@string/details_activity_movie_release_year" />
+
+                            <TextView
+                                android:id="@+id/movie_rating_textview"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:paddingBottom="5dp"
+                                android:paddingLeft="20dp"
+                                android:paddingRight="20dp"
+                                android:paddingTop="5dp"
+                                android:text="@string/details_activity_movie_user_rating" />
+                        </LinearLayout>
+                    </LinearLayout>
+
+                    <TextView
+                        android:id="@+id/plot_synopsis_textview"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_marginTop="13dp"
+                        android:gravity="bottom"
+                        android:paddingLeft="20dp"
+                        android:paddingRight="20dp"
+                        android:text="@string/details_activity_movie_plot_synopsis"
+                        android:textSize="12sp" />
+                </LinearLayout>
+            </LinearLayout>
         </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical">
-            <LinearLayout
-                android:id="@+id/linearLayout2"
-                android:layout_width="wrap_content"
+
+            <TextView
+                android:id="@+id/tv_videos_title"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_alignStart="@+id/linearLayout"
-                android:layout_alignTop="@+id/movie_release_year_textview"
-                android:orientation="vertical"
-                android:weightSum="1">
+                android:layout_marginBottom="10dp"
+                android:text="@string/videos_title" />
 
-                <TextView
-                    android:id="@+id/tv_videos_title"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_marginBottom="10dp"
-                    android:text="@string/videos_title" />
-
-                <TextView
-                    android:id="@+id/tv_videos_not_found"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="@string/videos_not_found"
-                    android:textSize="13sp"
-                    android:visibility="gone" />
-
-                <ListView
-                    android:id="@+id/lw_videos"
-                    android:layout_width="match_parent"
-                    android:layout_height="52dp"></ListView>
-            </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/linearLayout"
-                android:layout_width="wrap_content"
+            <TextView
+                android:id="@+id/tv_videos_not_found"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_alignParentEnd="true"
-                android:layout_below="@+id/linearLayout2"
-                android:layout_marginTop="16dp"
-                android:orientation="vertical">
+                android:text="@string/videos_not_found"
+                android:textSize="13sp"
+                android:visibility="gone" />
 
-                <TextView
-                    android:id="@+id/tv_review_title"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_marginBottom="10dp"
-                    android:text="@string/reviews_title" />
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/rv_movie_trailers"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"></android.support.v7.widget.RecyclerView>
+        </LinearLayout>
 
-                <TextView
-                    android:id="@+id/tv_reviews_not_found"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="@string/reviews_not_found"
-                    android:textSize="13sp"
-                    android:visibility="gone" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+            <TextView
+                android:id="@+id/tv_review_title"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginBottom="10dp"
+                android:text="@string/reviews_title" />
 
-                <ListView
-                    android:id="@+id/lw_reviews"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"></ListView>
-            </LinearLayout>
+            <TextView
+                android:id="@+id/tv_reviews_not_found"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/reviews_not_found"
+                android:textSize="13sp"
+                android:visibility="gone" />
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/rv_movie_reviews"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+            </android.support.v7.widget.RecyclerView>
         </LinearLayout>
 
     </LinearLayout>
 
-</LinearLayout>
+</android.support.v4.widget.NestedScrollView>

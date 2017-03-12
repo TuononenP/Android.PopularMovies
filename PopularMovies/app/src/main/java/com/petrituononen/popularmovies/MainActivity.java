@@ -107,6 +107,7 @@ public class MainActivity
                 if (moviesParcelable != null && moviesParcelable.size() > 0) {
                     mAdapter = new MovieAdapter(moviesParcelable, mImageWidth, mImageHeight, this);
                     mMoviesList.setAdapter(mAdapter);
+                    mAdapter.notifyDataSetChanged();
                 }
             }
             // restore list state
