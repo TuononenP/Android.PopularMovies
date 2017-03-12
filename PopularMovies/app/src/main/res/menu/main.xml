@@ -4,12 +4,12 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".MainActivity">
     <item
-        android:id="@+id/app_bar_list_top_rated"
-        android:title="@string/app_bar_top_rated"
-        app:showAsAction="ifRoom"/>
-    <item
         android:id="@+id/app_bar_list_most_popular"
         android:title="@string/app_bar_most_popular"
+        app:showAsAction="ifRoom"/>
+    <item
+        android:id="@+id/app_bar_list_top_rated"
+        android:title="@string/app_bar_top_rated"
         app:showAsAction="ifRoom"/>
     <item
         android:id="@+id/app_bar_list_favorites"

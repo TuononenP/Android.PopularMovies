@@ -57,9 +57,9 @@ public class ParcelableMovieDb extends IdElement implements Multi, Parcelable {
         this.setId(cursor.getInt(cursor.getColumnIndex(MovieContract.MovieEntry.COLUMN_MOVIE_ID)));
         this.title = cursor.getString(cursor.getColumnIndex(MovieContract.MovieEntry.COLUMN_TITLE));
         this.isFavorite = cursor.getInt(cursor.getColumnIndex(MovieContract.MovieEntry.COLUMN_FAVORITE)) > 0;
-        this.posterPath = cursor.getString(cursor.getColumnIndex(MovieContract.MovieEntry.COLUMN_TITLE));
+        this.posterPath = cursor.getString(cursor.getColumnIndex(MovieContract.MovieEntry.COLUMN_POSTER));
         this.overview = cursor.getString(cursor.getColumnIndex(MovieContract.MovieEntry.COLUMN_SYNOPSIS));
-        this.userRating = cursor.getFloat(cursor.getColumnIndex(MovieContract.MovieEntry.COLUMN_RATING));
+        this.voteAverage = cursor.getFloat(cursor.getColumnIndex(MovieContract.MovieEntry.COLUMN_RATING));
         this.releaseDate = cursor.getString(cursor.getColumnIndex(MovieContract.MovieEntry.COLUMN_RELEASE_DATE));
         this.popularity = cursor.getFloat(cursor.getColumnIndex(MovieContract.MovieEntry.COLUMN_POPULARITY));
 
@@ -128,14 +128,11 @@ public class ParcelableMovieDb extends IdElement implements Multi, Parcelable {
         }
         ContentValues values = new ContentValues();
 
-        PicassoUtils picassoUtils = new PicassoUtils();
-        String posterPath = picassoUtils.formMoviePosterUrl(this, context);
-
         values.put(MovieContract.MovieEntry._ID, this.getId());
         values.put(MovieContract.MovieEntry.COLUMN_MOVIE_ID, this.getId());
         values.put(MovieContract.MovieEntry.COLUMN_TITLE, this.getTitle());
         values.put(MovieContract.MovieEntry.COLUMN_FAVORITE, isFavorite);
-        values.put(MovieContract.MovieEntry.COLUMN_POSTER, posterPath);
+        values.put(MovieContract.MovieEntry.COLUMN_POSTER, this.posterPath);
         values.put(MovieContract.MovieEntry.COLUMN_SYNOPSIS, this.getOverview());
         values.put(MovieContract.MovieEntry.COLUMN_RATING, this.getVoteAverage());
         values.put(MovieContract.MovieEntry.COLUMN_RELEASE_DATE, this.getReleaseDate());

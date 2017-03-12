@@ -107,7 +107,7 @@ public class MovieProvider extends ContentProvider {
                         sortOrder);
                 break;
             case CODE_TOP_RATED_MOVIES:
-                // TODO: Finish
+                String sqlSortOrderTopRated = MovieContract.MovieEntry.getSortOrderTopRated();
                 cursor = mDbHelper.getReadableDatabase().query(
                         MovieContract.MovieEntry.TABLE_NAME,
                         projection,
@@ -115,10 +115,10 @@ public class MovieProvider extends ContentProvider {
                         selectionArgs,
                         null,
                         null,
-                        sortOrder);
+                        sqlSortOrderTopRated);
                 break;
             case CODE_MOST_POPULAR_MOVIES:
-                // TODO: Finish
+                String sqlSortOrderMostPopular = MovieContract.MovieEntry.getSortOrderMostPopular();
                 cursor = mDbHelper.getReadableDatabase().query(
                         MovieContract.MovieEntry.TABLE_NAME,
                         projection,
@@ -126,7 +126,7 @@ public class MovieProvider extends ContentProvider {
                         selectionArgs,
                         null,
                         null,
-                        sortOrder);
+                        sqlSortOrderMostPopular);
                 break;
             case CODE_FAVORITE_MOVIES:
                 String sqlSelectFavorites = MovieContract.MovieEntry.getSqlSelectForFavorites();

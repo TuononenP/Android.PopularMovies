@@ -255,6 +255,7 @@ public class MainActivity
                 mLastSortOrderState = sortOrder;
                 List<MovieDb> movieList = new ArrayList<>();
                 ArrayList<ParcelableMovieDb> movies = new ArrayList<>();
+                Cursor cursor = null;
                 switch (sortOrder) {
                     case TOP_RATED:
                         try {
@@ -267,6 +268,13 @@ public class MainActivity
                             e.printStackTrace();
                             mApiKeyNotFoundTextView.setVisibility(View.VISIBLE);
                         }
+                        // get from database
+//                        cursor = getContentResolver().query(
+//                                MovieContract.MovieEntry.TOP_RATED,
+//                                null,
+//                                null,
+//                                null,
+//                                null);
                         break;
                     case MOST_POPULAR:
                         try {
@@ -279,18 +287,37 @@ public class MainActivity
                             e.printStackTrace();
                             mApiKeyNotFoundTextView.setVisibility(View.VISIBLE);
                         }
+                        // get from database
+//                        cursor = getContentResolver().query(
+//                                MovieContract.MovieEntry.MOST_POPULAR,
+//                                null,
+//                                null,
+//                                null,
+//                                null);
                         break;
                     case FAVORITES:
-                        // TODO: Implement favorites menu item action
-//                        Cursor weatherCursor = getContentResolver().query(
-//                                MovieContract.MovieEntry.CONTENT_URI,
-//                                null,
-//                                null,
-//                                null,
-//                                MovieContract.MovieEntry.COLUMN_TITLE + " ASC");
+                        cursor = getContentResolver().query(
+                                MovieContract.MovieEntry.FAVORITES,
+                                null,
+                                null,
+                                null,
+                                MovieContract.MovieEntry.COLUMN_TITLE + " ASC");
                         break;
                 }
-                // convert to parcelable
+
+                // convert to parcelable movieDb from Cursor
+                if (cursor != null && cursor.moveToFirst()){
+                    while(!cursor.isAfterLast()){
+                        movies.add(new ParcelableMovieDb(getBaseContext(), cursor));
+                        cursor.moveToNext();
+                    }
+                }
+
+                if (cursor != null) {
+                    cursor.close();
+                }
+
+                // convert to parcelable movieDb from API call results
                 if (movieList != null && movieList.size() > 0) {
                     for (MovieDb movie : movieList) {
                         movies.add(new ParcelableMovieDb(getBaseContext(), movie));

@@ -29,6 +29,7 @@ public class MovieApplication extends Application {
         Stetho.Initializer initializer = initializerBuilder.build();
 
         // Initialize Stetho with the Initializer
+        // To view DB, insert chrome://inspect to Chrome Url bar and open Web SQL tab
         Stetho.initialize(initializer);
     }
 }

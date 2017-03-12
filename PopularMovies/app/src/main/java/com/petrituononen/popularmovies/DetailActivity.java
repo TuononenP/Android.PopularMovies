@@ -16,11 +16,13 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.petrituononen.popularmovies.data.MovieContract;
 import com.petrituononen.popularmovies.data.MovieDbHelper;
 import com.petrituononen.popularmovies.data.ParcelableMovieDb;
 import com.petrituononen.popularmovies.data.VideoListModel;
+import com.petrituononen.popularmovies.utilities.NetworkUtils;
 import com.petrituononen.popularmovies.utilities.PicassoUtils;
 
 import java.util.ArrayList;
@@ -99,6 +101,11 @@ public class DetailActivity extends AppCompatActivity {
                 catch (Exception ex) {
                     Log.w(TAG, ex.getMessage());
                 }
+                if (!NetworkUtils.isOnline(getApplicationContext())) {
+                    Toast.makeText(getApplicationContext(),
+                            "Internet access is required to view reviews and trailers",
+                            Toast.LENGTH_LONG);
+                }
             }
         }
     }
@@ -149,17 +156,23 @@ public class DetailActivity extends AppCompatActivity {
                 boolean isFavorite = !mIsFavoriteMovie;
                 mIsFavoriteMovie = isFavorite;
                 Cursor cursor = getMovieCursor();
-                // Insert/Update cursor
-                if (cursor == null) {
+                // Insert cursor if movie does not exist in db
+                if (cursor != null && cursor.moveToFirst() == false) {
                     // insert
                     getContentResolver().insert(MovieContract.MovieEntry.CONTENT_URI,
                         mMovieDb.GetContentValues(getBaseContext(), isFavorite));
                 }
                 else {
-                    // update
-                    getContentResolver().update(MovieContract.MovieEntry.CONTENT_URI,
-                            mMovieDb.GetContentValues(getBaseContext(), isFavorite),
-                            MovieContract.MovieEntry.getMovieIdSelection(mMovieDb.getId()), null);
+                    // delete from db if movie is no more user's favorite
+                    if (!isFavorite) {
+                        getContentResolver().delete(MovieContract.MovieEntry.CONTENT_URI,
+                                MovieContract.MovieEntry.getMovieIdSelection(mMovieDb.getId()), null);
+                    }
+//                    // update (instead of delete)
+//                    getContentResolver().update(MovieContract.MovieEntry.CONTENT_URI,
+//                            mMovieDb.GetContentValues(getBaseContext(), isFavorite),
+//                            MovieContract.MovieEntry.getMovieIdSelection(mMovieDb.getId()), null);
+
                 }
                 // update menu item star icon
                 if(isFavorite) {
@@ -187,6 +200,7 @@ public class DetailActivity extends AppCompatActivity {
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
+        // change star icon on appbar if movie is saved to db and is favorite
         MenuItem saveAsFavoriteMovieMenuItem = menu.findItem(R.id.save_as_favorite_movie);
         Cursor cursor = getMovieCursor();
         if (cursor != null && cursor.moveToFirst()) {
@@ -203,6 +217,9 @@ public class DetailActivity extends AppCompatActivity {
         return super.onPrepareOptionsMenu(menu);
     }
 
+    /**
+     * Find the current movie from db.
+     */
     private Cursor getMovieCursor() {
         Cursor cursor = null;
         if (mMovieDb != null) {
@@ -213,26 +230,5 @@ public class DetailActivity extends AppCompatActivity {
         }
 
         return cursor;
-    }
-
-    private void loadFromCursor() {
-        Cursor cursor = getMovieCursor();
-        if (cursor != null && cursor.moveToFirst()) {
-            String title = cursor.getString(INDEX_MOVIE_TITLE);
-            Boolean isFavorite = cursor.getInt(INDEX_MOVIE_FAVORITE) == 1;
-            String poster = cursor.getString(INDEX_MOVIE_POSTER);
-            String synopsis = cursor.getString(INDEX_MOVIE_SYNOPSIS);
-            float ratingFloat = cursor.getFloat(INDEX_MOVIE_RATING);
-            String releaseDate = cursor.getString(INDEX_MOVIE_RELEASE_DATE);
-
-            String releaseYear = releaseDate.substring(0,4);
-            mReleaseYearTextView.setText(releaseYear);
-            mOriginalTitleTextView.setText(title);
-            String rating = String.format("%1$.1f / 10", ratingFloat);
-            mUserRatingTextView.setText(rating);
-            mPlotSynopsisTextView.setText(synopsis);
-            String imageUrl = mPicassoUtils.formMoviePosterUrl(mMovieDb, this);
-            mPicassoUtils.loadAlbumArtThumbnail(this, mMovieThumbnailImageView, imageUrl);
-        }
     }
 }
