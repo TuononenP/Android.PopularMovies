@@ -370,13 +370,14 @@ public class MainActivity
             }
         }
 
+        // show error message if movies could not be fetched
         if (data == null || data.size() == 0) {
             switch (mLastSortOrderState) {
-                case TOP_RATED:
-                    showErrorMessage(getString(R.string.could_not_fetch_top_rated_movies));
-                    break;
                 case MOST_POPULAR:
                     showErrorMessage(getString(R.string.could_not_fetch_popular_movies));
+                    break;
+                case TOP_RATED:
+                    showErrorMessage(getString(R.string.could_not_fetch_top_rated_movies));
                     break;
                 case FAVORITES:
                     showErrorMessage(getString(R.string.could_not_fetch_favorite_movies));
