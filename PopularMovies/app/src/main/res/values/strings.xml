@@ -35,5 +35,5 @@
     <string name="could_not_fetch_movies">Movies could not be fetched.</string>
     <string name="could_not_fetch_popular_movies">Popular movies could not be fetched.</string>
     <string name="could_not_fetch_top_rated_movies">Top rated movies could not be fetched.</string>
-    <string name="could_not_fetch_favorite_movies">Favorite movies could not be fetched.</string>
+    <string name="could_not_fetch_favorite_movies">You have not favored any movies yet.</string>
 </resources>
