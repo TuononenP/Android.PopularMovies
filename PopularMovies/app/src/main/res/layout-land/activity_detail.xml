@@ -34,11 +34,12 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:paddingTop="10dp">
+
                 <ImageView
                     android:id="@+id/movie_thumbnail_imageview"
-                    android:layout_width="140dp"
+                    android:layout_width="135dp"
                     android:layout_height="200dp"
-                    android:background="#c0c0c0"
+                    android:background="@android:color/transparent"
                     android:contentDescription="@string/details_activity_movie_thumbnail_description" />
 
                 <LinearLayout

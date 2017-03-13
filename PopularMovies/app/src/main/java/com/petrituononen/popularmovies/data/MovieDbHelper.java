@@ -11,7 +11,7 @@ import com.petrituononen.popularmovies.data.MovieContract.MovieEntry;
 public class MovieDbHelper extends SQLiteOpenHelper {
 
     public static final String DATABASE_NAME = "movie.db";
-    private static final int DATABASE_VERSION = 4;
+    private static final int DATABASE_VERSION = 5;
 
     public MovieDbHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -31,6 +31,7 @@ public class MovieDbHelper extends SQLiteOpenHelper {
                         MovieEntry.COLUMN_RATING   + " REAL NOT NULL, "                    +
                         MovieEntry.COLUMN_RELEASE_DATE + " STRING NOT NULL, "                    +
                         MovieEntry.COLUMN_POPULARITY + " REAL NOT NULL, "                    +
+                        MovieEntry.COLUMN_POSTER_BYTES + " BLOB, "                    +
 
                         " UNIQUE (" + MovieEntry.COLUMN_MOVIE_ID + ") ON CONFLICT REPLACE);";
 

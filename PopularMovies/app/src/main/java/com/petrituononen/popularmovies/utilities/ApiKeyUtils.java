@@ -14,7 +14,7 @@ import java.io.IOException;
  */
 public class ApiKeyUtils {
     private static final String TAG = ApiKeyUtils.class.getSimpleName();
-    private IOUtils mIOUtils = new IOUtils();
+    private IOUtilities mIOUtils = new IOUtilities();
 
     public String getTheMovieDbApiKey(Context context) throws ApiKeyNotFoundException {
         String apiKey = "";

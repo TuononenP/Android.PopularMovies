@@ -3,6 +3,7 @@ package com.petrituononen.popularmovies.data;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
+import android.os.NetworkOnMainThreadException;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.util.Log;
@@ -11,9 +12,12 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.petrituononen.popularmovies.exceptions.ApiKeyNotFoundException;
 import com.petrituononen.popularmovies.exceptions.NoInternetConnectionException;
+import com.petrituononen.popularmovies.utilities.IOUtilities;
 import com.petrituononen.popularmovies.utilities.PicassoUtils;
 import com.petrituononen.popularmovies.utilities.TheMovieDbUtils;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -52,8 +56,10 @@ import info.movito.themoviedbapi.model.people.PersonCrew;
 public class ParcelableMovieDb extends IdElement implements Multi, Parcelable {
 
     private TheMovieDbUtils movieDbUtils = new TheMovieDbUtils();
+    private Context mContext;
 
     public ParcelableMovieDb(Context context, Cursor cursor) {
+        mContext = context;
         this.setId(cursor.getInt(cursor.getColumnIndex(MovieContract.MovieEntry.COLUMN_MOVIE_ID)));
         this.originalTitle = cursor.getString(cursor.getColumnIndex(MovieContract.MovieEntry.COLUMN_TITLE));
         this.isFavorite = cursor.getInt(cursor.getColumnIndex(MovieContract.MovieEntry.COLUMN_FAVORITE)) > 0;
@@ -135,7 +141,7 @@ public class ParcelableMovieDb extends IdElement implements Multi, Parcelable {
         }
     }
 
-    public ContentValues GetContentValues(Context context, boolean isFavorite) {
+    public ContentValues GetContentValues(Context context, boolean isFavorite) throws NetworkOnMainThreadException{
         if (this == null) {
             return null;
         }
@@ -145,11 +151,29 @@ public class ParcelableMovieDb extends IdElement implements Multi, Parcelable {
         values.put(MovieContract.MovieEntry.COLUMN_MOVIE_ID, this.getId());
         values.put(MovieContract.MovieEntry.COLUMN_TITLE, this.getOriginalTitle());
         values.put(MovieContract.MovieEntry.COLUMN_FAVORITE, isFavorite);
-        values.put(MovieContract.MovieEntry.COLUMN_POSTER, this.posterPath);
+        values.put(MovieContract.MovieEntry.COLUMN_POSTER, this.getPosterPath());
         values.put(MovieContract.MovieEntry.COLUMN_SYNOPSIS, this.getOverview());
         values.put(MovieContract.MovieEntry.COLUMN_RATING, this.getVoteAverage());
         values.put(MovieContract.MovieEntry.COLUMN_RELEASE_DATE, this.getReleaseDate());
-        values.put(MovieContract.MovieEntry.COLUMN_POPULARITY, this.popularity);
+        values.put(MovieContract.MovieEntry.COLUMN_POPULARITY, this.getPopularity());
+
+//        try {
+            String imageUrlString = new PicassoUtils().formMoviePosterUrl(this, context);
+            URL imageUrl = null;
+            try {
+
+                imageUrl = new URL(imageUrlString);
+            } catch (MalformedURLException e) {
+                Log.w("ParcelableMovieDb cstr", e.getMessage());
+                e.printStackTrace();
+            }
+            byte[] posterImageBytes = new IOUtilities().GetBytesFromUrl(imageUrl);
+            values.put(MovieContract.MovieEntry.COLUMN_POSTER_BYTES, posterImageBytes);
+//        } catch(Exception ex) {
+//            ex.printStackTrace();
+//            Log.w("ParcelableMovieDb cstr", "Could not load poster image bytes");
+//        }
+
 
         return values;
     }
