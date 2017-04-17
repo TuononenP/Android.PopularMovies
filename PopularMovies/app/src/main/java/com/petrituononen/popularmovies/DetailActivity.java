@@ -186,7 +186,8 @@ public class DetailActivity extends AppCompatActivity {
         switch (item.getItemId()) {
             // Respond to the action bar's Up/Home button
             case android.R.id.home:
-                finish();
+                Intent intent = new Intent(this, MainActivity.class);
+                startActivity(intent);
                 return true;
             case R.id.save_as_favorite_movie:
                 mIsFavoriteMovie = !mIsFavoriteMovie;

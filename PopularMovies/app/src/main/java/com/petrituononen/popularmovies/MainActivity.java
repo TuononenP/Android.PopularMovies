@@ -252,6 +252,7 @@ public class MainActivity
                 mLoadingIndicator.setVisibility(View.VISIBLE);
                 // load from cache if cache is not empty and sort order is same
                 if (mMovies != null && mMovies.size() > 0
+                        && mLastSortOrderState != null
                         && mLastSortOrderState.equals(args.getString(SORT_ORDER))) {
                     deliverResult(mMovies);
                     mLoadingIndicator.setVisibility(View.INVISIBLE);
